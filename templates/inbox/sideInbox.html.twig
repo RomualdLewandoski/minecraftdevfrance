@@ -1,0 +1,122 @@
+<div class="col-md-3">
+    <div class="panel panel-default">
+        <div class="panel-body inbox-menu">
+            <a href="#" class="btn btn-danger btn-block" data-toggle="modal" data-target="#newConv">Nouveau
+                Message</a>
+            <ul>
+                <li>
+                    <a href="{{ path('inbox') }}"><i class="fa fa-inbox"></i> Boite de réception
+                        <span class="badge badge-danger pull-right" id="inboxCount"></span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ path('inbox_system') }}"><i class="far fa-cogs"></i>
+                        Systeme{% if sysMessageCount != 0 %}<span
+                                class="badge badge-info pull-right"
+                                id="sysCount">{{ sysMessageCount }}</span>{% endif %}
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+        <div class="modal fade" id="newConv" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Démarrer une
+                            conversation</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('createConv') }}" method="post">
+                        <div class="modal-body">
+
+                            <select id="selectConv" name="target">
+
+                            </select>
+                            <script type="text/javascript">
+                                $(function () {
+                                    var strip_tags = function (str) {
+                                        return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+                                    };
+                                    var truncate_string = function (str, chars) {
+                                        if ($.trim(str).length <= chars) {
+                                            return str;
+                                        } else {
+                                            return $.trim(str.substr(0, chars)) + '…';
+                                        }
+                                    };
+                                    var $select = $('#selectConv');
+                                    if ($select.data('selectator') === undefined) {
+                                        $select.selectator({
+                                            labels: {
+                                                search: 'Rechercher un utilisateur ...'
+                                            },
+                                            showAllOptionsOnFocus: false,
+                                            keepOpen: false,
+                                            load: function (search, callback) {
+                                                if (search.length < this.minSearchLength) return callback();
+                                                $.ajax({
+                                                    url: '{{ path('listUser') }}?search=' + encodeURIComponent(search),
+                                                    type: 'GET',
+                                                    dataType: 'json',
+                                                    success: function (data) {
+                                                        console.log(data);
+                                                        callback(data.users);
+                                                    },
+                                                    error: function () {
+                                                        callback();
+                                                    }
+                                                });
+                                            },
+                                            delay: 300,
+                                            minSearchLength: 3,
+                                            valueField: 'id',
+                                            textField: 'username',
+                                            render: {
+                                                option: function (_item, escape) {
+                                                    console.log(_item);
+                                                    var html = '';
+                                                    var email = md5(_item.email)
+                                                    var isMc = (_item.isMc)
+                                                    var mc = (_item.mc)
+                                                    var skin = (_item.skin)
+                                                    if (isMc) {
+                                                        html += '<div class="selectator_option_left">' + ((typeof _item.email !== 'undefined') ? skin: '') + '</div>';
+
+                                                    } else {
+                                                        html += '<div class="selectator_option_left">' + ((typeof _item.email !== 'undefined') ? '<img src="http://www.gravatar.com/avatar/' + email + '?s=80&r=g&d=mm">' : '') + '</div>';
+                                                    }
+                                                    html += '<div class="selectator_option_title">' + ((typeof _item.username !== 'undefined') ? _item.username : '') + '</div>';
+                                                    html += '<div class="selectator_option_right">' + ((typeof _item.online !== 'undefined') ? _item.online ? '<span class="text-success"> En ligne</span>' : '<span class ="text-danger">Hors ligne<span>' : '') + '</div>';
+                                                    return html;
+                                                }
+                                            }
+
+                                        });
+
+                                    } else {
+                                        $select.selectator('destroy');
+                                    }
+                                })
+                                ;
+                            </script>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Démarrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div><!--/.col-->

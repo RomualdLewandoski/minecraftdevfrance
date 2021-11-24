@@ -1,0 +1,50 @@
+<header class="main-header">
+    <!-- Logo -->
+    <a href="{{ path('admin') }}" class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini"><b>M</b>DF</span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg"><b>Minecraft</b>DevFrance</span>
+    </a>
+    <nav class="navbar navbar-static-top">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+
+                <!-- User Account Section Starts -->
+                <li class="dropdown user user-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <img src="{{ gravatar(app.user.email) }}" class="user-image" alt="User Image">
+                        <span class="d-none d-sm-block">{{ app.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- User Image Starts -->
+                        <li class="user-header">
+                            <img src="{{ gravatar(app.user.email) }}" class="img-circle" alt="User Image">
+                            <p class="profile-username">
+                                {{ app.user.username }} - {{ app.user.roles[0] }}
+                            </p>
+                        </li>
+                        <!-- User Image Ends -->
+
+                        <!-- Menu Footer Starts -->
+                        <li class="user-footer">
+                            <div class="pull-left">
+                                <a href="{{ path('main') }}" class="btn btn-default btn-flat">Retour au site</a>
+                            </div>
+                            <div class="pull-right">
+                                <a href="{{ path('app_logout') }}" class="btn btn-default btn-flat">Déconnexion</a>
+                            </div>
+                        </li>
+                        <!-- Menu Footer Ends -->
+                    </ul>
+                </li>
+                <!-- User Account Section Ends -->
+            </ul>
+        </div>
+    </nav>
+</header>

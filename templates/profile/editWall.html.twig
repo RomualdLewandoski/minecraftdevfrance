@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-user"></i> Espace membre
+                    </a>
+                </li>
+                <li>Editer un status</li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="card">
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    <div class="text-right">
+                        <button class="btn btn-warning btn-sm">
+                            <strong>EDITER</strong>
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

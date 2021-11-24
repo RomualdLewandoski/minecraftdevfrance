@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-home"></i> Accueil
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <h1 class="h3 mt-4">Forums</h1>
+        <div class="row mt-3">
+            <div class="col-md-12 col-lg-8 mb-4">
+
+                {% for cat in cats %}
+                    {% if cat.isActive == true %}
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                {{ cat.name }}
+                            </div>
+                            <div class="card-body px-3 pb-0 pt-0">
+                                {% for forum in cat.forums %}
+                                    {% if forum.isActive == true %}
+                                        <div class="row forum-item border-bottom mt-4 pb-2 align-items-center">
+                                            <div class="col-md-6 col-lg-6 mb-2 mb-lg-0">
+
+                                                <div class="forum-title d-flex">
+                                                    <span
+                                                            class="forum-icon mr-1"><i
+                                                                class="fas fa-comments"></i></span>
+                                                    <a href="{{ path('view_forum', { 'id': forum.id}) }}">
+                                                        {{ forum.nom }}
+                                                    </a>
+                                                </div>
+                                                <small class="mt-1 forum-desc">{{ forum.description|slice(0, 50) }}
+                                                    ...
+                                                </small>
+                                            </div>
+                                            <div class="col-md-3 col-lg-2 mb-2 mb-lg-0">
+                                                <div class="text-lg-center text-md-left">{{ forum.topics|length }} <br>
+                                                    <small>Sujets</small>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 col-lg-4 mb-2 mb-lg-0">
+                                                {% if forum.lastTopic != null %}
+                                                    <div class="row forum-latest d-flex">
+
+                                                        {% if forum.lastTopic.author.isMinecraftAvatar == true and forum.lastTopic.author.userInfo.minecraft != null %}
+                                                            {{ getMcSkin(forum.lastTopic.author.userInfo.minecraft, "rounded-circle mr-1")|raw }}
+                                                        {% else %}
+                                                            <img class="rounded-circle mr-1" src="
+                                                             {{ gravatar(forum.lastTopic.author.email) }}
+                                                        ">
+                                                        {% endif %}
+                                                        <div>
+                                                            <a href="{{ path('view_topic', {'id': forum.lastTopic.id}) }}">
+                                                                {{ forum.lastTopic.titre|slice(0,15) }}...
+                                                            </a>
+                                                            <br>
+                                                            <small class="card-text sub-title">
+                                                                par {{ forum.lastTopic.author.username }}
+                                                                <br>
+                                                                {{ forum.lastTopic.lastReplyAt|date('d/m/y à H:i') }}
+                                                            </small>
+                                                        </div>
+
+                                                    </div>
+                                                {% else %}
+                                                    <div class="forum-latest text-center">
+                                                        ---
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col">
+                <div class="card pb-0">
+                    <div class="card-header">
+                        Sujets récents
+                    </div>
+                    <div class="card-body py-0">
+                        {% if lastTopic != null %}
+                            {% for topic in lastTopic %}
+                                <div class="row forum-latest border-bottom mt-2 pb-2">
+
+                                    <div class="d-xl-block d-none col-xl-4">
+                                        {% if topic.author.isMinecraftAvatar == true and topic.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(topic.author.userInfo.minecraft, "rounded-circle w-100 mt-2")|raw }}
+                                        {% else %}
+                                            <img src="{{ gravatar(topic.author.email) }}"
+                                                 class="rounded-circle w-100 mt-2">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-xl-8 col-md-12">
+                                        <a href="{{ path('view_topic', {'id': topic.id}) }}">
+                                            {{ topic.titre }}
+                                        </a>
+                                        <br>
+                                        <small class="card-text sub-title">par {{ topic.author.username }}
+                                            <br>
+                                            le {{ topic.lastReplyAt|date('d/m/y à H:i') }}</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            Pas de sujet
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-header">
+                        Dernière vidéo youtube
+                    </div>
+                    <div class="card-body p-0" style="height: 315px">
+                        <iframe width="100%" height="315" src="{{ settings.youtube }}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                    </div>
+                </div>
+                <div class="card mt-4">
+                    <div class="card-body p-0" style="height: 500px">
+                        <iframe src="https://discordapp.com/widget?id=626799332850532392&theme=dark" width="100%"
+                                height="500" allowtransparency="true" frameborder="0"
+                                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Tags
+            <small>Liste des tags</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Tags</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+
+    <div class="dashboard1">
+
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <table class="table ">
+                    <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Affichage</th>
+                        <th>actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for tag in tags %}
+                        <tr>
+                            <td>{{ tag.id }}</td>
+                            <td> <h4><span class="badge badge-pill" style="color: {{ tag.textColor }}; background-color: {{ tag.color }}"> {{ tag.nom }}</span></h4></td>
+                            <td>{{ tag.priority }}</td>
+                            <td>
+                                <form method="post" action="{{ path('tag_delete', {'id': tag.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tag.id) }}">
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="3">no records found</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fa fa-tag"></i> Ajouter un tag
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="text-center">
+                            <button class="btn btn-lg btn-success">{{ button_label|default('Save') }}</button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Gestion Catégorie
+            <small>Editer une catégorie</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Catégorie</a></li>
+            <li class="active">Editer</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="row">
+            <div class="col-md-6 text-right ">
+                <button class="btn btn-lg btn-warning">{{ button_label|default('Update') }}</button>
+                {{ form_end(form) }}
+            </div>
+            <div class="col-md-6 text-left">
+                <form method="post" action="{{ path('cat_forum_delete', {'id': cat_forum.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cat_forum.id) }}">
+                    <button class="btn btn-lg btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+        <a href="{{ path('cat_forum_index') }}"><i class="fa fa-arrow-left"></i> back to list</a>
+
+
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-envelope"></i> Messagerie
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <h1 class="h3 mt-4">Boite de réception</h1>
+        <div class="mt-3">
+            <div class="row inbox">
+                {% embed('inbox/sideInbox.html.twig') %}
+
+                {% endembed %}
+
+                <div class="col-md-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <ul class="messages-list">
+                                {% for message in messages %}
+                                    <li class="{% if message.isRead == false %} unread {% endif %}">
+                                        <a href="{{ path('read_system_message', {'id': message.id}) }}">
+                                            <div class="header">
+
+                                                <span class="from"><i class="far fa-tools"></i> Système</span>
+                                                <span class="date"><span
+                                                            class="fa fa-paper-clip"></span> {{ message.sendAt|date("d/m/Y à H:i") }}</span>
+                                            </div>
+
+                                            <div class="description">
+                                                {{ message.message|slice(0, 50)|striptags  }}...
+                                            </div>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                        <li>
+                                                <div class="description">
+                                                   Vous n'avez aucun message dans cette boite
+                                                </div>
+
+                                        </li>
+                                {% endfor %}
+
+
+                            </ul>
+                            <div class="offset-md-4 col-md-4">
+                                {{ knp_pagination_render(messages) }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div><!--/.col-->
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

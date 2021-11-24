@@ -1,0 +1,58 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion utilisateurs
+            <small>Liste des utilisateurs</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Utilisateurs</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1 table-responsive">
+        <table class="table mt-3" id="userTable">
+            <thead>
+            <th>ID</th>
+            <th>Pseudo</th>
+            <th>Rangs</th>
+            <th>Action</th>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+
+                    <td class="d-flex">
+                        {% for rank in user.userRanks %}
+                            <h5><span class=" badge mr-1" style="color: white; background-color: {{ rank.color }}">{{ rank.name }}</span></h5>
+                        {% else %}
+                        ---
+                        {% endfor %}
+                    </td>
+
+                    <td>
+                        <a href="{{ path('user_management_edit', { id : user.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5"> Aucun utilisateur c'est étrange ça devrait pas exister</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <script>
+            $(document).ready(() => {
+                $('#userTable').DataTable();
+            })
+        </script>
+    </div>
+
+
+{% endblock %}

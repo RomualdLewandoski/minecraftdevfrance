@@ -1,0 +1,172 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ReportController!{% endblock %}
+
+{% block body %}
+
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-exclamation-triangle"></i> Reports
+                    </a>
+                </li>
+            </ol>
+        </section>
+
+        <h1 class="h3 mt-4">Reports des sujets</h1>
+        <!-- START TOPIC REPORT -->
+        <table class="table" id="topicTable">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Auteur de report</th>
+                <th scope="col">Auteur du sujet</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for topic in topicReport %}
+                <tr>
+                    <th scope="row">{{ topic.date|date("d/m/Y à H:i") }}</th>
+                    <td>{{ topic.author.username }}</td>
+                    <td>{{ topic.topic.author.username }}</td>
+                    <td>
+                        <a href="{{ path('read_report', { 'id': topic.id, 'type': 'topic'}) }}">
+                            <button type="button" class="btn btn-warning">Voir le report</button>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Aucun report de topic
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!-- END TOPIC REPORT -->
+        <h3>Report de réponses</h3>
+        <!-- START REPLY REPORT -->
+        <table class="table" id="replyTable">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Auteur de report</th>
+                <th scope="col">Auteur de la réponse</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for reply in replyReport %}
+                <tr>
+                    <th scope="row">{{ reply.date|date('d/m/y à H:i') }}</th>
+                    <td>{{ reply.author.username }}</td>
+                    <td>{{ reply.reply.author.username }}</td>
+                    <td>
+                        <a href="{{ path('read_report', {'id': reply.id, 'type':'reply' }) }}">
+                            <button type="button" class="btn btn-warning">Voir le report</button>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Aucun report de réponse
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!-- END REPLY REPORT -->
+        <h3>Report du wall</h3>
+        <!-- START USERWALL REPORT -->
+        <table class="table" id="wallTable">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Auteur de report</th>
+                <th scope="col">Auteur du wall</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for wall in wallReport %}
+                <tr>
+                    <th scope="row">{{ wall.date|date("d/m/Y à H:i") }}</th>
+                    <td>{{ wall.author.username }}</td>
+                    <td>{{ wall.wall.user.username }}</td>
+                    <td>
+                        <a href="{{ path('read_report', {'id': wall.id, 'type':'wall' }) }}">
+                            <button type="button" class="btn btn-warning">Voir le report</button>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Aucun Report de mur
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <!-- END USERWALL REPORT -->
+        <h3>Report Utilisateur</h3>
+        <!-- START REPORT USER -->
+        <table class="table" id="userTable">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Date</th>
+                <th scope="col">Auteur de report</th>
+                <th scope="col">Utilisateur</th>
+                <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user in userReport %}
+                <tr>
+                    <th scope="row">{{ user.date|date("d/m/Y à H:i") }}</th>
+                    <td>{{ user.author.username }}</td>
+                    <td>{{ user.user.username }}</td>
+                    <td>
+                        <a href="{{ path('read_report', {'id': user.id, 'type':'user' }) }}">
+                            <button type="button" class="btn btn-warning">Voir le report</button>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Aucun report d'utilisateur
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        <!-- end report user -->
+    </div>
+    <script>
+        $(document).ready(() => {
+            {% if topicReport != null %}
+            $('#topicTable').dataTable()
+            {% endif %}
+
+            {% if replyReport != null %}
+            $('#replyTable').dataTable()
+            {% endif %}
+
+            {% if wallReport != null %}
+            $('#wallTable').dataTable()
+            {% endif %}
+
+            {% if userReport != null %}
+            $('#userTable').dataTable()
+            {% endif %}
+
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Catégorie
+            <small>Liste des catégories</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Catégorie</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{{ path('cat_forum_new') }}" class="btn btn-sm btn-success">Create new</a>
+            </div>
+        </div>
+
+        <table class="table mt-4">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>IsActive</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for cat_forum in cat_forums %}
+                <tr>
+                    <td>{{ cat_forum.id }}</td>
+                    <td>{{ cat_forum.name }}</td>
+                    <td>{{ cat_forum.position }}</td>
+                    <td>{{ cat_forum.isActive ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ path('cat_forum_show', {'id': cat_forum.id}) }}" class="btn btn-primary btn-sm">show</a>
+                        <a href="{{ path('cat_forum_edit', {'id': cat_forum.id}) }}" class="btn btn-warning btn-sm">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}

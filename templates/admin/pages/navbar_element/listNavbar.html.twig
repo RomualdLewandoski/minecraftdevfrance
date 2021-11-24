@@ -1,0 +1,61 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}NavbarElement index{% endblock %}
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Navigation
+            <small>Liste de navigation</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Navigation</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{{ path('navbar_element_new') }}" class="btn btn-sm btn-success">Create new</a>
+            </div>
+        </div>
+
+        <table class="table mt-4">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Type</th>
+                <th>Valeur</th>
+                <th>New Tab</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for navbar_element in navbar_elements %}
+                <tr>
+                    <td>{{ navbar_element.id }}</td>
+                    <td>{{ navbar_element.nom }}</td>
+                    <td>{{ navbar_element.position }}</td>
+                    <td>{{ navbar_element.type == 0 ? 'Lien' : 'Dropdown' }}</td>
+                    <td>{{ navbar_element.value }}</td>
+                    <td>{{ navbar_element.isNewTab ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ path('navbar_element_show', {'id': navbar_element.id}) }}" class="btn btn-primary btn-sm">show</a>
+                        <a href="{{ path('navbar_element_edit', {'id': navbar_element.id}) }}" class="btn btn-warning btn-sm">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+{% endblock %}
+

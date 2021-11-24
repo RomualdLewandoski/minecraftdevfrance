@@ -1,0 +1,321 @@
+<nav class="navbar navbar-light navbar-expand-lg navigation-clean nav-mc d-none d-lg-block">
+    <div class="container container-mob">
+        <button data-toggle="collapse" class="navbar-toggler nav_icon" data-target="#navcol-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navcol-1">
+            <div class="col-md-7">
+                <div class="row">
+                    <div class="col-md-2 d-none d-md-block">
+                        <a href="{{ path('main') }}">
+                            <img class="w-100 d-none d-md-block" src="{{ asset("assets/img/logo.webp") }}">
+                        </a>
+                    </div>
+
+                    <div class="col-sm-null col-md-10 col-12">
+                        <h1 class="brand h2"><a href="{{ path('main') }}"> MinecratDevFrance</a></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="row mob-reso-nav">
+                    {% if app.user %}
+                        <div class="col-md-11  offset-md-1  row justify-content-md-end">
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown messages-menu" id="warning-box">
+                                    <a href="{{ path('inbox') }}" class="dropdown-toggle">
+                                        <i class="far fa-envelope"></i>
+                                        <span class="label label-success" id="msgCount"></span>
+                                    </a>
+                                </li>
+                                <li class="dropdown messages-menu" id="warning-box">
+                                    <a href="#" class="dropdown-toggle">
+                                        <i class="far fa-bell"></i>
+                                        <span class="label label-success">99</span>
+                                    </a>
+                                </li>
+                                {% if hasReport %}
+                                    <li class="dropdown messages-menu" id="warning-box">
+                                        <a href="{{ path('report') }}" class="dropdown-toggle">
+                                            <i class="far fa-exclamation-triangle"></i>
+                                            <span class="label label-success" id="reportCount"></span>
+                                        </a>
+                                    </li>
+
+                                {% endif %}
+                                <!-- User Account Section Starts -->
+                                <li class="dropdown user user-menu">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                                        {% if app.user.isMinecraftAvatar == true and app.user.userInfo.minecraft != null %}
+                                            {{ getMcSkin(app.user.userInfo.minecraft, "user-image")|raw }}
+                                        {% else %}
+                                            <img src="{{ gravatar(app.user.email) }}"
+                                                 class="user-image" alt="User Image">
+                                        {% endif %}
+
+
+                                        <span class="d-none d-sm-block">Mon compte</span>
+                                    </a>
+                                    <ul class="dropdown-menu pt-0">
+                                        <!-- User Image Starts -->
+                                        <li class="user-header">
+                                            {% if app.user.isMinecraftAvatar == true and app.user.userInfo.minecraft != null %}
+                                                {{ getMcSkin(app.user.userInfo.minecraft, "img-circle")|raw }}
+                                            {% else %}
+                                                <img src="{{ gravatar(app.user.email) }}"
+                                                     class="img-circle" alt="User Image">
+                                            {% endif %}
+                                            <p class="profile-username">
+                                                {{ app.user.username }} - {{ app .user.roles[0] }}
+                                            </p>
+                                        </li>
+                                        <!-- User Image Ends -->
+
+                                        <!-- Menu Footer Starts -->
+                                        <li class="user-footer">
+
+                                            <div class="pull-left">
+                                                <a href="{{ path('profile') }}" class="btn btn-default btn-flat"><i
+                                                            class="fas fa-user"></i> Mon profil</a><br>
+                                            </div>
+                                            <div class="pull-right">
+                                                <a href="{{ path('settings') }}" class="btn btn-default btn-flat"><i
+                                                            class="fas fa-cogs"></i> Paramètres</a><br>
+
+                                            </div>
+                                            {% if is_granted('ROLE_ADMIN') %}
+                                                <div class="mt-5">
+                                                    <div class="pull-left">
+                                                        <a href="{{ path('admin') }}"
+                                                           class="btn btn-default btn-flat"><i class="fas fa-crown"></i>
+                                                            Admin</a><br>
+                                                    </div>
+
+                                                    <div class="pull-right">
+                                                        <a href="{{ path('app_logout') }}"
+                                                           class="btn btn-default btn-flat"><i
+                                                                    class="fas fa-sign-out"></i> Déconnexion</a>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class="text-center mt-5">
+                                                    <a href="{{ path('app_logout') }}" class="btn btn-default btn-flat"><i
+                                                                class="fas fa-sign-out"></i> Déconnexion</a>
+
+                                                </div>
+                                            {% endif %}
+                                            {% if hasReport == true %}
+                                                <!--<div class="mt-5">
+                                                    <a href="{{ path('app_logout') }}" class=" mt-3 btn btn-default btn-flat"><i
+                                                                class="fas fa-warning"></i> Panel</a>
+
+                                                </div>-->
+                                            {% endif %}
+                                        </li>
+                                        <!-- Menu Footer Ends -->
+                                    </ul>
+                                </li>
+                                <!-- User Account Section Ends -->
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="col-md-11 col-lg-8 col-xl-9 offset-md-1 offset-lg-3 row justify-content-md-end">
+                            <a href="{{ path('app_login') }}"><p class="mt-2 mr-2 signin-nav">Déja un Compte ?</p></a>
+                            <a href="{{ path('app_register') }}"
+                               class="btn btn-lg btn-black shadowv signin-btn">S'inscrire</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid nav-mc px-0 d-none d-lg-block">
+    <ul class="nav nav-tabs container px-md-4 px-sm-0 tabs-title">
+        {% for navbar_element in navbar_elements %}
+            <li class="nav-item">
+
+                {% if navbar_element.type == 0 %}
+                    <a class="nav-link" {% if navbar_element.isNewTab %} target="_blank" {% endif %}
+                       href="{{ navbar_element.value }}">{{ navbar_element.nom }}</a>
+                {% else %}
+                    <a role="tab" data-toggle="tab" class="nav-link"
+                       href="#tab-{{ navbar_element.id }}">{{ navbar_element.nom }}</a>
+                {% endif %}
+
+
+            </li>
+        {% else %}
+            <li class="nav-item"><a role="tab" data-toggle="tab" class="nav-link" href="#tab-1">nop</a></li>
+        {% endfor %}
+    </ul>
+    <div class="bg-light">
+        <div class="container tab-content px-md-4 px-sm-0">
+            {% set firstMenu = true %}
+            {% for navMenu in navbar_elements %}
+                {% if navMenu.type == 1 %}
+                    <div role="tabpanel"
+                         class="tab-pane {% if firstMenu == true %} active {% set firstMenu = false %} {% endif %}"
+                         id="tab-{{ navMenu.id }}">
+                        <!--START NAV -->
+                        <nav class="navbar navbar-expand-lg navbar-light bg-light px-0">
+                            <div class="container-fluid px-0">
+                                <ul class="navbar-nav mr-auto text-black subnav">
+                                    {% for navSub in navMenu.navbarSubMenus %}
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="{{ navSub.value }}">{{ navSub.nom }} <span
+                                                        class="sr-only">(current)</span></a>
+                                        </li>
+                                    {% else %}
+                                        <li class="nav-item active">
+                                            nope
+                                        </li>
+                                    {% endfor %}
+
+                                </ul>
+                            </div>
+
+                        </nav>
+                        <!--END NAV-->
+                    </div>
+
+                {% endif %}
+
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+
+<!--MOBINAV -->
+
+<div class="wrapper d-block d-lg-none d-xl-none">
+    <!-- Sidebar  -->
+    <nav id="sidebar">
+        <div id="dismiss">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+
+        <div class="sidebar-header">
+            <h3>Minecraft<br>DevFrance</h3>
+        </div>
+
+        <ul class="list-unstyled components">
+            {% for navbar_element in navbar_elements %}
+                <li class="active">
+                    {% if navbar_element.type == 0 %}
+                        <a href="{{ navbar_element.value }}">{{ navbar_element.nom }}</a>
+                    {% else %}
+                        <a href="#mobi-{{ navbar_element.id }}" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle collapsed">{{ navbar_element.nom }}</a>
+                        <ul class="list-unstyled collapse" id="mobi-{{ navbar_element.id }}" style="">
+                            {% for navSub in navbar_element.navbarSubMenus %}
+                                <li>
+                                    <a href="{{ navSub.value }}">{{ navSub.nom }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('main') }}">Home</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <ul class="list-unstyled CTAs navbar-nav">
+            {% if app.user %}
+                <ul class="list-unstyled navbar-nav flex-row">
+                    <li class="dropdown messages-menu" id="warning-box">
+                        <a href="{{ path('inbox') }}" class="dropdown-toggle">
+                            <i class="far fa-envelope"></i>
+                            <span class="label label-success" id="msgCount2"></span>
+                        </a>
+                    </li>
+                    <li class="dropdown messages-menu" id="warning-box">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="far fa-bell"></i>
+                            <span class="label label-success">99</span>
+                        </a>
+                    </li>
+                    {% if hasReport %}
+                        <li class="dropdown messages-menu" id="warning-box">
+                            <a href="{{ path('report') }}" class="dropdown-toggle">
+                                <i class="far fa-exclamation-triangle"></i>
+                                <span class="label label-success" id="reportCount2"></span>
+                            </a>
+                        </li>
+
+                    {% endif %}
+                </ul>
+                <li class="user-menu">
+                    <a href="#accountSub" data-toggle="collapse" aria-expanded="false"
+                       class="dropdown-toggle collapsed pl-0">
+                        {% if app.user.isMinecraftAvatar == true and app.user.userInfo.minecraft != null %}
+                        {{ getMcSkin(app.user.userInfo.minecraft, "user-image")|raw }}
+                    {% else %}
+                        <img src="{{ gravatar(app.user.email) }}"
+                             class="user-image" alt="User Image">
+                        {% endif %}Mon compte</a>
+                    <ul class="list-unstyled collapse" id="accountSub" style="">
+                        <li>
+                            <a href="{{ path('profile') }}"><i
+                                        class="fas fa-user"></i> Mon profil</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('settings') }}" class=""><i
+                                        class="fas fa-cogs"></i> Paramètres</a>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li>
+                                <a href="{{ path('admin') }}"
+                                   class=""><i class="fas fa-crown"></i>
+                                    Admin</a>
+                            </li>
+                        {% endif %}
+                        <li>
+                            <a href="{{ path('app_logout') }}"
+                               class=""><i
+                                        class="fas fa-sign-out"></i> Déconnexion</a>
+                        </li>
+                    </ul>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ path('app_register') }}" class="btn btn-lg btn-black shadowv signin-btn">S'inscrire</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_login') }}" class="article">Déja un compte?</a>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    <button type="button" id="sidebarCollapse" class="btn btn-dark d-inline-block d-lg-none ml-auto">
+        <i class="fas fa-align-justify"></i>
+    </button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        $('#dismiss, .overlay').on('click', function () {
+            $('#sidebar').removeClass('active');
+            $('.overlay').removeClass('active');
+        });
+
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').addClass('active');
+            $('.overlay').addClass('active');
+            $('.collapse.in').toggleClass('in');
+            $('a[aria-expanded=true]').attr('aria-expanded', 'false');
+        });
+    });
+</script>
+<!-- END MOBINAV-->

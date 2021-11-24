@@ -1,0 +1,216 @@
+<aside class="main-sidebar">
+    <div class="nano">
+        <div class="nano-content">
+            <ul class="sidebar-menu" data-widget="tree">
+                <li class="header">GENERAL</li>
+                <li class="{% if currentPath == "admin" %} active {% endif %}">
+                    <a href="{{ path('admin') }}">
+                        <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="header">GESTION NAVIGATION</li>
+                <li class="treeview {% if currentPath == "navbar_element_index" or currentPath == "navbar_element_new" or currentPath=="navbar_element_show" or currentPath == "navbar_element_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-compass"></i>
+                        <span>Navigation</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "navbar_element_index" %} active {% endif %}">
+                            <a href="{{ path('navbar_element_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste</span>
+                            </a>
+                        </li>
+                        <li class="{% if currentPath == "navbar_element_new" %} active {% endif %}">
+                            <a href="{{ path('navbar_element_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter un onglet</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="treeview {% if currentPath == "navbar_sub_menu_index" or currentPath == "navbar_sub_menu_new" or currentPath=="navbar_sub_menu_show" or currentPath == "navbar_sub_menu_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-compass"></i>
+                        <span>SousMenus</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "navbar_sub_menu_index" %} active {% endif %}">
+                            <a href="{{ path('navbar_sub_menu_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste</span>
+                            </a>
+                        </li>
+                        <li class="{% if currentPath == "navbar_sub_menu_new" %} active {% endif %}">
+                            <a href="{{ path('navbar_sub_menu_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter un sous menu</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="header">GESTION FORUM</li>
+                <li class="{% if currentPath == "site_settings" %} active {% endif %}">
+                    <a href="{{ path('site_settings') }}">
+                        <i class="fa fa-dashboard"></i> <span>Paramètres site</span>
+                    </a>
+                </li>
+                <li class="treeview {% if currentPath == "cat_forum_index" or currentPath == "cat_forum_new" or currentPath=="cat_forum_show" or currentPath == "cat_forum_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-sort-amount-asc"></i>
+                        <span>Catégories</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "cat_forum_index" %} active {% endif %}">
+                            <a href="{{ path('cat_forum_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste des catégories</span>
+                            </a>
+                        </li>
+                        <li class="{% if currentPath == "cat_forum_new" %} active {% endif %}">
+                            <a href="{{ path('cat_forum_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter une catégorie</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="treeview {% if currentPath == "tag_index" or currentPath == "tag_new" or currentPath=="tag_show" or currentPath == "tag_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-tag"></i>
+                        <span>Tags</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "tag_index" %} active {% endif %}">
+                            <a href="{{ path('tag_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste des tags</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview {% if currentPath == "forum_index" or currentPath == "forum_new" or currentPath=="forum_show" or currentPath == "forum_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="far fa-comments"></i>
+                        <span>Forums</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "forum_index" %} active {% endif %}">
+                            <a href="{{ path('forum_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste des forums</span>
+                            </a>
+                        </li>
+                        <li class="{% if currentPath == "forum_new" %} active {% endif %}">
+                            <a href="{{ path('forum_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter un forum</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="header">GESTION UTILISATEURS</li>
+                <li class="treeview {% if currentPath == "user_rank_index" or currentPath == "user_rank_new" or currentPath == "user_rank_show" or currentPath == "user_rank_edit"%}active{% endif %}">
+                    <a href="#">
+                        <i class="fas fa-tools"></i>
+                        <span>Permissions</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "user_rank_index" %} active {% endif %}">
+                            <a href="{{ path('user_rank_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste des permissions</span>
+                            </a>
+                        </li>
+
+                        <li class="{% if currentPath == "user_rank_new" %} active {% endif %}">
+                            <a href="{{ path('user_rank_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter une permissions</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview {% if currentPath == "user_management" or currentPath == "user_management_edit" %}active{% endif %}">
+                    <a href="#">
+                        <i class="far fa-users"></i>
+                        <span>Utilisateurs</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "user_management" %} active {% endif %}">
+                            <a href="{{ path('user_management') }}">
+                                <i class="far fa-circle"></i> <span>Liste des utilisateurs</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="header">TROPHEES</li>
+                <li class="treeview {% if currentPath == "trophy_index" or currentPath == "trophy_new" or currentPath == "trophy_edit" or currentPath == "trophy_show" %}active{% endif %}">
+                    <a href="#">
+                        <i class="fas fa-trophy"></i>
+                        <span>Trophées</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "trophy_index" %} active {% endif %}">
+                            <a href="{{ path('trophy_index') }}">
+                                <i class="far fa-circle"></i> <span>Liste des trophées</span>
+                            </a>
+                        </li>
+
+                        <li class="{% if currentPath == "trophy_new" %} active {% endif %}">
+                            <a href="{{ path('trophy_new') }}">
+                                <i class="far fa-circle"></i> <span>Ajouter un trophée</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="header">SPACER DEMO</li>
+                <li class="{% if currentPath == "routename,  we can use OR for multiples routes" %} active {% endif %}">
+                    <a href="#">
+                        <i class="fa fa-envelope"></i> <span>LinkDemo no dropdown</span>
+                    </a>
+
+                </li>
+                <li class="header">SPACER DEMO</li>
+                <li class="treeview {% if currentPath == "routeName" %}active{% endif %}">
+                    <a href="#">
+                        <i class="fa fa-cogs"></i>
+                        <span>link with dropdown</span>
+                        <span class="pull-right-container">
+									<i class="fa fa-angle-left pull-right"></i>
+								</span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li class="{% if currentPath == "route" %} active {% endif %}">
+                            <a href="#">
+                                <i class="far fa-circle"></i> <span>Dropdown Item 1</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</aside>

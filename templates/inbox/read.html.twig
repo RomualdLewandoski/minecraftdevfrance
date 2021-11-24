@@ -1,0 +1,320 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-envelope"></i> Messagerie
+                    </a>
+                </li>
+            </ol>
+        </section>
+        {% set isFirst = true %}
+        <h1 class="h3 mt-4">Conversation avec : {{ conversation.otherUser(app.user).username }} <i class="fa online-txt"
+                                                                                                   style="display: none"
+                                                                                                   id="onlineBadge"></i>
+        </h1>
+        <hr>
+        <div class="mt-3">
+            <div class="row inbox">
+                {% embed('inbox/sideInbox.html.twig') %}
+
+                {% endembed %}
+
+                <div class="col-md-9">
+                    <div class="chat-message">
+                        <ul class="list-unstyled chat scrollbar-inner px-5 mb-2" id="chatBox">
+                            {% for message in messages %}
+                                <li class="d-flex justify-content-between mb-4" id="{{ message.id }}">
+                                    {% if message.author.username != app.user.username %}
+                                        {% if message.author.isMinecraftAvatar == true and message.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(message.author.userInfo.minecraft, "avatar rounded-circle mr-2 ml-lg-3 ml-0 z-depth-1")|raw }}
+                                        {% else %}
+                                            <img src="{{ gravatar(message.author.email) }}" alt="avatar"
+                                                 class="avatar rounded-circle mr-2 ml-lg-3 ml-0 z-depth-1">
+                                        {% endif %}
+                                    {% endif %}
+                                    <div class="card col-11 chat-body white p-3 {% if message.author.username != app.user.username %}ml-2{% endif %} z-depth-1">
+                                        <div class="header">
+                                            <strong class="primary-font">{{ message.author.username }}</strong>
+                                            <small class="pull-right text-muted"><i
+                                                        class="far fa-clock"></i> {{ message.postedAt|date("d/m/Y à H:i") }}
+                                            </small>
+                                        </div>
+                                        <hr class="w-100">
+                                        <div class="card-body col-12  p-1 mb-0 w-100">
+                                            {{ message.content|raw }}
+                                        </div>
+                                    </div>
+                                    {% if message.author.username == app.user.username %}
+                                        {% if message.author.isMinecraftAvatar == true and message.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(message.author.userInfo.minecraft, "avatar rounded-circle mr-2 ml-lg-3 ml-0 z-depth-1")|raw }}
+                                        {% else %}
+                                            <img src="{{ gravatar(message.author.email) }}" alt="avatar"
+                                                 class="avatar rounded-circle mr-0 ml-3 z-depth-1">
+                                        {% endif %}
+                                    {% endif %}
+                                </li>
+                            {% else %}
+                                <span id="noMsg"> Aucun message dans cette conversation</span>
+                            {% endfor %}
+                        </ul>
+                        {{ form_start(form, {'attr': {'id': 'msgForm'}}) }}
+                        <li class="card white pb-0">
+
+                            {{ form_widget(form) }}
+
+
+                        </li>
+
+                        <button class="btn btn-info btn-rounded btn-sm waves-effect waves-light float-right"><i
+                                    class="far fa-paper-plane"></i> Envoyer
+                        </button>
+                        {{ form_end(form) }}
+                        <script>
+
+                            function updateScroll() {
+                                var element = document.getElementById("chatBox");
+                                element.scrollTop = element.scrollHeight;
+                            }
+
+                            let profileImg = `<img src="%gravatar%" alt="avatar"
+                                                            class="avatar rounded-circle mr-0 ml-3 z-depth-1">`
+                            let authorTemplate = ` <li class="d-flex justify-content-between mb-4" id="%id%">
+                                                        <div class="card col-11 chat-body white p-3 z-depth-1">
+                                                            <div class="header">
+                                                                <strong class="primary-font">%author%</strong>
+                                                                <small class="pull-right text-muted">
+                                                                    <i class="far fa-clock"></i> %date%
+                                                                </small>
+                                                            </div>
+                                                            <hr class="w-100">
+                                                            <div class="card-body col-12  p-1 mb-0 w-100">
+                                                                %message%
+                                                            </div>
+                                                        </div>
+                                                        %profileImg%
+                                                    </li>`
+
+                            let readerTemplate = `<li class="d-flex justify-content-between mb-4" id="%id%">
+                                                        %profileImg%
+                                                        <div class="card col-11 chat-body white ml-2 p-3 z-depth-1">
+                                                            <div class="header">
+                                                                <strong class="primary-font">%author%</strong>
+                                                                <small class="pull-right text-muted">
+                                                                    <i class="far fa-clock"></i> %date%
+                                                                </small>
+                                                            </div>
+                                                            <hr class="w-100">
+                                                            <div class="card-body col-12  p-1 mb-0 w-100">
+                                                                %message%
+                                                            </div>
+                                                        </div>
+                                                    </li>`;
+                            let offset = 10;
+                            var convId = {{ conversation.id }};
+                            var isEnd = false;
+                            var isAllRead = false;
+
+                            $(document).ready(() => {
+                                updateScroll()
+                                $('.scrollbar-inner').scrollbar();
+                                $('#msgForm').submit((event) => {
+                                    event.preventDefault()
+
+                                    var content = CKEDITOR.instances['message_content'].getData()
+
+                                    $.post("{{ path('send_msg') }}", {
+                                        convId: convId,
+                                        message: content
+                                    }, (data) => {
+                                        if (data.state == 0) {
+                                            toastr.error(data.err, "Erreur")
+                                        } else {
+                                            let temp = authorTemplate;
+                                            temp = temp.replace(/%author%/g, "{{ app.user.username }}")
+                                            var currDate = new Date()
+                                            let day = currDate.getDate() < 10 ? "0" + currDate.getDate() : currDate.getDate()
+                                            let month = currDate.getMonth() < 10 ? "0" + (currDate.getMonth() + 1) : (currDate.getMonth() + 1)
+                                            let year = new Date().getFullYear() + "";
+                                            year = year.match(/\d{2}$/)
+                                            let hour = currDate.getHours() < 10 ? "0" + currDate.getHours() : currDate.getHours()
+                                            let minutes = currDate.getMinutes() < 10 ? "0" + currDate.getMinutes() : currDate.getMinutes()
+                                            let date = day + "/" + month + "/" + year + " à " + hour + ":" + minutes
+                                            temp = temp.replace(/%date%/g, date)
+                                            temp = temp.replace(/%message%/g, content)
+                                            var email = md5("{{ app.user.email }}")
+                                            {% if app.user.isMinecraftAvatar == true and app.user.userInfo.minecraft != null %}
+                                            temp = temp.replace(/%profileImg%/g, `{{ getMcSkin(app.user.userInfo.minecraft, "avatar rounded-circle mr-0 ml-3 z-depth-1")|raw }}`)
+
+                                            {% else %}
+                                            temp = temp.replace(/%profileImg%/g, profileImg)
+                                            temp = temp.replace(/%gravatar%/g, "http://www.gravatar.com/avatar/" + email + "?s=80&r=g&d=mm")
+                                            {% endif %}
+
+                                            temp = temp.replace(/%id%/g, data.id)
+                                            $('#chatBox').append(temp)
+                                            $('#noMsg').hide()
+                                            updateScroll()
+                                            offset += 1
+                                            CKEDITOR.instances['message_content'].setData("")
+                                        }
+                                    })
+                                })
+
+                                function retriveMsg() {
+                                    $.post("{{ path('get_unread') }}", {
+                                        convId: convId,
+                                    }, (data) => {
+                                        if (data.state == 1) {
+                                            let msg = data.msg
+                                            if (msg.length != 0) {
+                                                let x
+                                                for (x in msg) {
+                                                    let message = msg[x]
+                                                    let str = readerTemplate
+                                                    str = str.replace(/%author%/g, message.author)
+                                                    str = str.replace(/%message%/g, message.content)
+                                                    var currDate = new Date(message.date * 1000)
+                                                    let day = currDate.getDate() < 10 ? "0" + currDate.getDate() : currDate.getDate()
+                                                    let month = currDate.getMonth() < 10 ? "0" + (currDate.getMonth() + 1) : (currDate.getMonth() + 1)
+                                                    let year = new Date().getFullYear() + "";
+                                                    year = year.match(/\d{2}$/)
+                                                    let hour = currDate.getHours() < 10 ? "0" + currDate.getHours() : currDate.getHours()
+                                                    let minutes = currDate.getMinutes() < 10 ? "0" + currDate.getMinutes() : currDate.getMinutes()
+                                                    let date = day + "/" + month + "/" + year + " à " + hour + ":" + minutes
+                                                    str = str.replace(/%date%/g, date)
+
+                                                    if (message.isMc){
+                                                        str = str.replace(/%profileImg%/g, message.skin)
+                                                    } else{
+                                                        var email = md5(message.email)
+                                                        str = str.replace(/%profileImg%/g, profileImg)
+                                                        str = str.replace(/%gravatar%/g, "http://www.gravatar.com/avatar/" + email + "?s=80&r=g&d=mm")
+                                                    }
+
+
+                                                    str = str.replace(/%id%/g, message.id)
+                                                    $('#noMsg').hide()
+                                                    $('#chatBox').append(str)
+                                                    offset += 1
+                                                }
+                                                isAllRead = false;
+                                            }
+                                        }
+                                        setTimeout(retriveMsg, 1500)
+                                    })
+                                }
+
+
+                                $('#chatBox').scroll(() => {
+                                    if ($('#chatBox').scrollTop() == 0) {
+                                        if (!isEnd) {
+                                            isEnd = true;
+                                            $.post("{{ path('get_previous') }}", {
+                                                convId: convId,
+                                                offset: offset
+                                            }, (data) => {
+                                                $('#chatBox').scrollTop(10);
+                                                if (data.state == 0) {
+                                                    toastr.error(data.err, "Erreur")
+                                                    isEnd = false;
+                                                } else {
+                                                    if (data.end == true) {
+                                                        isEnd = true
+                                                        let str = "<p class='text-center'>Ceci est le début de votre conversation</p>";
+                                                        $('#chatBox').prepend(str)
+
+                                                    } else {
+                                                        let x
+                                                        var current_top_element = $('#chatBox li:first');
+                                                        for (x in data.msg) {
+                                                            let message = data.msg[x]
+                                                            let str;
+                                                            message.isAuthor ? str = authorTemplate : str = readerTemplate
+                                                            str = str.replace(/%author%/g, message.author)
+                                                            str = str.replace(/%message%/g, message.content)
+                                                            var currDate = new Date(message.date * 1000)
+                                                            let day = currDate.getDate() < 10 ? "0" + currDate.getDate() : currDate.getDate()
+                                                            let month = currDate.getMonth() < 10 ? "0" + (currDate.getMonth() + 1) : (currDate.getMonth() + 1)
+                                                            let year = new Date().getFullYear() + "";
+                                                            year = year.match(/\d{2}$/)
+                                                            let hour = currDate.getHours() < 10 ? "0" + currDate.getHours() : currDate.getHours()
+                                                            let minutes = currDate.getMinutes() < 10 ? "0" + currDate.getMinutes() : currDate.getMinutes()
+                                                            let date = day + "/" + month + "/" + year + " à " + hour + ":" + minutes
+                                                            str = str.replace(/%date%/g, date)
+                                                            var email = md5(message.email)
+
+                                                            if (message.isMc){
+                                                                str = str.replace(/%profileImg%/g, message.skin)
+                                                            } else {
+                                                                str = str.replace(/%profileImg%/g, profileImg)
+                                                                str = str.replace(/%gravatar%/g, "http://www.gravatar.com/avatar/" + email + "?s=80&r=g&d=mm")
+                                                            }
+                                                            str = str.replace(/%id%/g, message.id)
+                                                            $('#noMsg').hide()
+                                                            $('#chatBox').prepend(str)
+                                                            $('#chatBox').scrollTop(current_top_element.position().top);
+                                                        }
+                                                        isEnd = false;
+                                                        offset += 10
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+
+                                $('#chatBox').scroll(() => {
+                                    var elm = document.getElementById("chatBox");
+
+                                    if (elm.scrollTop + elm.clientHeight == elm.scrollHeight) {
+                                        if (!isAllRead) {
+                                            isAllRead = true;
+                                            $.post("{{ path('set_read') }}", {
+                                                convId: convId
+                                            }, (data) => {
+                                                if (data.state == 0) {
+                                                    toastr.error(data.err, "Erreur")
+                                                    isAllRead = false;
+                                                } else {
+                                                    isAllRead = true;
+                                                }
+                                            })
+                                        }
+                                    }
+                                })
+
+                                function isOtherOnline() {
+                                    let otherId = {{ conversation.otherUser(app.user).id }}
+                                        $.post("{{ path('isOnlineUser') }}", {
+                                            target: otherId
+                                        }, (data) => {
+                                            if (data.state == 1) {
+                                                if (data.online) {
+                                                    $('#onlineBadge').show()
+                                                } else {
+                                                    $('#onlineBadge').hide()
+                                                }
+                                            } else {
+                                                $('#onlineBadge').hide()
+                                            }
+                                            setTimeout(isOtherOnline, 5000)
+                                        })
+                                }
+
+                                retriveMsg()
+                                isOtherOnline()
+                            })
+
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

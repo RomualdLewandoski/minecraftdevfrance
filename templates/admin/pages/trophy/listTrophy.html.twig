@@ -1,0 +1,69 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Trophées
+            <small>Liste des trophées</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Trophées</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{{ path('trophy_new') }}" class="btn btn-sm btn-success">Create new</a>
+            </div>
+        </div>
+
+        <table class="table mt-4">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>BgColor</th>
+                <th>Description</th>
+                <th>IsSuper</th>
+                <th>Action</th>
+                <th>Value</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for trophy in trophies %}
+                <tr>
+                    <td>{{ trophy.id }}</td>
+                    <td>{{ trophy.name }}</td>
+                    <td>
+                        <h5>
+                            <div class="badge"
+                                 style="background-color: {{ trophy.bgColor }}; color: white">{{ trophy.bgColor }}</div>
+                        </h5>
+                    </td>
+                    <td>{{ trophy.description }}</td>
+                    <td>{{ trophy.isSuper ? 'Super' : 'Normal' }}</td>
+                    <td>{{ trophy.action == 0 ? "Poster x sujets" :
+                        trophy.action == 1 ? "Poster x réponses" :
+                        trophy.action == 2 ? "Recevoir X likes" :
+                        trophy.action == 3 ? "Donner x likes" :
+                        trophy.action == 4 ? "Ancienneté de x " :
+                        trophy.action == 5 ? "Recevoir x superLike" :
+                        "Valeur inconnue" }}</td>
+                    <td>{{ trophy.value }}</td>
+                    <td>
+                        <a href="{{ path('trophy_show', {'id': trophy.id}) }}" class="btn btn-sm btn-primary">show</a>
+                        <a href="{{ path('trophy_edit', {'id': trophy.id}) }}" class="btn btn-warning btn-sm">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

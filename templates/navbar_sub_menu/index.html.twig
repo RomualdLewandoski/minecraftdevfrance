@@ -1,0 +1,55 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}NavbarSubMenu index{% endblock %}
+
+{% block body %}
+<section class="content-header">
+    <h1>
+        Gestion Navigation
+        <small>Liste des sous menus</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+        <li><a href="#">Navigation</a></li>
+        <li class="active">SousMenu</li>
+    </ol>
+</section>
+<div class="dashboard1">
+    <div class="row">
+        <div class="col-md-12 text-right">
+            <a href="{{ path('navbar_sub_menu_new') }}" class="btn btn-sm btn-success">Create new</a>
+        </div>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Position</th>
+                <th>Value</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for navbar_sub_menu in navbar_sub_menus %}
+            <tr>
+                <td>{{ navbar_sub_menu.id }}</td>
+                <td>{{ navbar_sub_menu.nom }}</td>
+                <td>{{ navbar_sub_menu.position }}</td>
+                <td>{{ navbar_sub_menu.value }}</td>
+                <td>
+                    <a href="{{ path('navbar_sub_menu_show', {'id': navbar_sub_menu.id}) }}" class="btn btn-primary btn-sm">show</a>
+                    <a href="{{ path('navbar_sub_menu_edit', {'id': navbar_sub_menu.id}) }}" class="btn btn-warning btn-sm">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

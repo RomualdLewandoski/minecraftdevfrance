@@ -1,0 +1,78 @@
+{% set currentPath = app.request.get('_route') %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <!-- Google Web Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500,500i,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/enyo/dropzone/master/dist/dropzone.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/tables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/tables/buttons.dataTables.min.css') }}">
+    <!-- Custom CSS Starts -->
+    <link rel="stylesheet" href="{{ asset('assets/css/skin/all-skins.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/general/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/sidebar/side-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/fonts/fonts-style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/nanoscroller/nanoscroller.css') }}">
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/css/mailbox/inbox.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('assets/css/dashboard/dashboard1.css') }}">
+    <link rel="stylesheet" href="{{ asset("assets/fontawesome/css/all.css") }}">
+    <script src="{{ asset('assets/js/jquery/slim.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery/jquery.min.js') }}"></script>
+</head>
+
+<body class="sidebar-mini fixed skin-blue">
+<div class="wrapper">
+    {% block topbar %}
+        {% embed "admin/includes/topbar.html.twig" %}
+        {% endembed %}
+    {% endblock topbar %}
+
+    {% block sideBar %}
+        {% embed 'admin/includes/sidebar.html.twig' %}
+        {% endembed %}
+    {% endblock sideBar %}
+
+    <div class="content-wrapper">
+        {% block body %}
+
+        {% endblock body %}
+
+    </div>
+
+    <a href="javascript:" id="return-to-top"><i class="fa fa-arrow-up" aria-hidden="true"></i></a>
+
+    <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+            Version 1.0.0
+        </div>
+        <p class="mb-0"></p>
+    </footer>
+
+</div>
+
+<!-- Popper.JS -->
+<script src="{{ asset('assets/js/jquery/popper.min.js') }}"></script>
+<!-- Bootstrap JS -->
+<script src="{{ asset('assets/js/bootstrap/bootstrap.min.js') }}"></script>
+<!-- Page JS -->
+<script src="{{ asset('assets/js/charts/Chart.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/charts/bar/grouped-bar-chart.js') }}"></script>
+<script src="{{ asset('assets/js/charts/pie/doughnut-chart-multiline.js') }}"></script>
+<script src="{{ asset('assets/js/dashboard/dashboard1.js') }}"></script>
+<!-- Theme JS -->
+<script src="{{ asset('assets/js/nanoscroller/nanoscroller.js') }}"></script>
+<script src="{{ asset('assets/js/custom/theme.js') }}"></script>
+<script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v2.0.4/dist/clipboard.min.js"></script>
+<script src="{{ asset('assets/js/tables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/tables/dataTables.buttons.min.js') }}"></script>
+
+</body>
+</html>

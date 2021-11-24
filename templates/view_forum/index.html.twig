@@ -1,0 +1,225 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ViewForumController!{% endblock %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-comments"></i> {{ forum.frontDisplayName|raw }}
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-md-10">
+                    <h1 class="h3">Lecture de : {{ forum.nom }}</h1>
+
+                </div>
+                <div class="col-md-2">
+                    {% if forum.isLocked == false or canManageForum == true %}
+                        <a href="{{ path('create_topic', { 'id' : forum.id }) }}"
+                           class="btn btn-primary btn-new-toppic"><i class="fas fa-plus"></i> Nouveau topic</a>
+                    {% endif %}
+                </div>
+            </div>
+
+
+            <div class="blockquote-footer mt-3">
+                <p>{{ forum.description }}</p>
+            </div>
+
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <!-- SUBFORUM ITEM -->
+                    {% for subforum in forum.forums %}
+                        {% if subforum.isActive == true %}
+                            <div class="row forum-item border-bottom mt-4 pb-2 align-items-center">
+                                <div class="col-md-6 col-lg-5 mb-2 mb-lg-0">
+                                    <div class="forum-title d-flex">
+                                        <span
+                                                class="forum-icon mr-1"><i
+                                                    class="fas fa-folder-open"></i></span>
+                                        <a href="{{ path('view_forum', { 'id': subforum.id}) }}">
+                                            {{ subforum.nom }}
+                                        </a>
+                                        <br>
+                                    </div>
+                                    <small class="mt-1 forum-desc">{{ subforum.description|slice(0, 140) }}...</small>
+                                </div>
+                                <div class="col-md-3 col-lg-2 mb-2 mb-lg-0">
+                                    <div class="text-lg-center text-md-left">{{ subforum.topics|length }} <br>
+                                        <small>Sujets</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-lg-4 mb-2 mb-lg-0">
+                                    {% if subforum.lastTopic != null %}
+                                        <div class="row forum-latest">
+                                            <div class="col-3 col-lg-4  d-md-none d-lg-block pl-1">
+                                                {% if subforum.lastTopic.author.isMinecraftAvatar == true and subforum.lastTopic.author.userInfo.minecraft != null %}
+                                                    {{ getMcSkin(subforum.lastTopic.author.userInfo.minecraft, "rounded-circle")|raw }}
+                                                {% else %}
+                                                    <img class="rounded-circle"
+                                                         src="{{ gravatar(subforum.lastTopic.author.email) }}">
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-9 col-md-12 col-lg-8">
+                                                <div>
+                                                    <a href="{{ path('view_topic', {'id': subforum.lastTopic.id}) }}">
+                                                        {{ subforum.lastTopic.titre|slice(0,15) }}...
+                                                    </a>
+                                                    <br>
+                                                    <small class="card-text sub-title">
+                                                        par {{ subforum.lastTopic.author.username }}
+                                                        <br>
+                                                        {{ subforum.lastTopic.lastReplyAt|date('d/m/y à H:i') }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="forum-latest text-center">
+                                            ---
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        Aucun sous forum
+                    {% endfor %}
+                    <!-- END SUBFORUM ITEM -->
+                </div>
+            </div>
+
+            {% if forum.pined != null %}
+                <div class="card mt-3">
+                    <div class="card-body">
+                        {% for topic in forum.pined %}
+                            <!-- TOPIC ITEM -->
+                            <div class="row pt-2 pb-2 border-bottom">
+                                <div class="col-8 col-lg-6 ">
+                                    <a href="{{ path('view_topic', {'id' : topic.id}) }}"
+                                       class="card-text name-topic d-flex">
+                                        <span class="forum-icon mr-2"><i class="fas fa-thumbtack"></i></span>
+                                        <span class="mr-3">{{ topic.titre }}</span>
+                                        {% for tag in topic.tags %}
+                                            <span class="badge badge-pill"
+                                                  style="color: {{ tag.textColor }}; background-color: {{ tag.color }}">{{ tag.nom }}</span>
+                                        {% endfor %}
+                                    </a>
+                                    <small class="card-text sub-title">Par {{ topic.author.username }}
+                                        , {{ topic.PostedAt|date("d/m/Y à H:i") }}</small>
+                                </div>
+                                <div class="col-5 col-lg-3">
+                                    <p class="card-text name-topic">{{ topic.replies|length }} Réponses</p>
+                                    <p class="card-text sub-title">{{ topic.numberView }} lectures</p>
+                                </div>
+                                <div class="d-none d-lg-block col-lg-3 ">
+                                    {% if topic.lastReplies != null %}
+                                        <div class="row">
+                                            {% if topic.lastReplies.author.isMinecraftAvatar == true and topic.lastReplies.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(topic.lastReplies.author.userInfo.minecraft, "rounded-circle icon-avatar-topic")|raw }}
+                                            {% else %}
+                                            <img class="rounded-circle icon-avatar-topic"
+                                                 src="{{ gravatar(topic.lastReplies.author.email) }}">
+                                            {% endif %}
+                                            <div class="col-md-8">
+                                                <p class="card-text name-topic">{{ topic.lastReplies.author.username }}</p>
+                                                <p class="card-text sub-title">{{ topic.lastReplies.postedAt|date("d/m/Y à H:i") }}</p>
+                                            </div>
+
+                                        </div>
+                                    {% else %}
+                                        ---
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            <!-- END TOPIC ITEM -->
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card mt-3">
+                <div class="card-body">
+                    <div class=" mt-2 mb-3">
+                        <div class="offset-md-4 col-md-4">
+                            {% if paginator != null %}
+                                {{ knp_pagination_render(paginator) }}
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% for topic in paginator %}
+                        <!-- TOPIC ITEM -->
+                        <div class="row pt-2 pb-2 border-bottom">
+
+                            <div class="col-8 col-lg-6 ">
+                                <a href="{{ path('view_topic', {'id' : topic.id}) }}"
+                                   class="card-text name-topic d-flex">
+                                    {% if topic.isLocked %}
+                                        <span class="forum-icon mr-2"><i class="fas fa-lock"></i></span>
+                                    {% else %}
+                                        <span class="forum-icon mr-2"><i class="fas fa-comments"></i></span>
+                                    {% endif %}
+                                    <span class="mr-3 ">{{ topic.titre }}</span>
+                                    <div>
+                                        {% for tag in topic.tags %}
+                                            <span class="badge badge-pill"
+                                                  style="color: {{ tag.textColor }}; background-color: {{ tag.color }}">{{ tag.nom }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                </a>
+                                <small class="card-text sub-title">Par {{ topic.author.username }}
+                                    , {{ topic.PostedAt|date("d/m/Y à H:i") }}</small>
+                            </div>
+                            <div class="col-5 col-lg-3">
+                                <p class="card-text name-topic">{{ topic.replies|length }} Réponses</p>
+                                <p class="card-text sub-title">{{ topic.numberView }} lectures</p>
+                            </div>
+                            <div class="d-none d-lg-block col-lg-3 ">
+                                {% if topic.lastReplies != null %}
+                                    <div class="row">
+                                        {% if topic.lastReplies.author.isMinecraftAvatar == true and topic.lastReplies.author.userInfo.minecraft != null %}
+                                        {{ getMcSkin(topic.lastReplies.author.userInfo.minecraft, "rounded-circle icon-avatar-topic")|raw }}
+                                        {% else %}
+                                        <img class="rounded-circle icon-avatar-topic"
+                                             src="{{ gravatar(topic.lastReplies.author.email) }}">
+                                        {% endif %}
+                                        <div class="col-md-8">
+                                            <p class="card-text name-topic">{{ topic.lastReplies.author.username }}</p>
+                                            <p class="card-text sub-title">{{ topic.lastReplies.postedAt|date("d/m/Y à H:i") }}</p>
+                                        </div>
+
+                                    </div>
+                                {% else %}
+                                    ---
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        <!-- END TOPIC ITEM -->
+                    {% else %}
+                        Aucun sujet dans ce forum
+                    {% endfor %}
+                </div>
+                <div class=" mt-2 mb-3">
+                    <div class="offset-md-4 col-md-4">
+                        {% if paginator != null %}
+                            {{ knp_pagination_render(paginator) }}
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

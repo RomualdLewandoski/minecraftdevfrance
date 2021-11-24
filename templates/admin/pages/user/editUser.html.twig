@@ -1,0 +1,74 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion utilisateurs
+            <small>Editer un utilisateur</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Utilisateurs</a></li>
+            <li class="active">Editer</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+        <div class="row mt-3">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body table-responsive">
+                        <table class="table">
+                            <tr>
+                                <th>Nom d'utilisateur</th>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th>Adresse email</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Inscrit le</th>
+                                <td>{{ user.createdAt|date('d / m / Y à H:i') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Dernière connexion le</th>
+                                <td>{{ user.lastLogin|date("d / m / Y à H:i") }}</td>
+                            </tr>
+                            <tr>
+                                <th>Grades</th>
+                                <td class="d-flex">
+                                    {% for rank in user.userRanks %}
+                                        <h4>
+                                          <span class=" badge badge-pill mr-1"
+                                                style="color: white; background-color: {{ rank.color }}">
+                                              <a href="{{ path('user_management_remove_rank', { 'idUser' : user.id, 'idRank' : rank.id }) }}"><i class="far fa-times-circle"></i> {{ rank.name }}</a>
+                                          </span>
+                                        </h4>
+                                    {% else %}
+                                        ---
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        Ajouter un role
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="text-center">
+                            <button class="btn btn-lg btn-success">{{ button_label|default('Ajouter') }}</button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

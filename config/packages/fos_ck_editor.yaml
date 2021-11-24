@@ -1,0 +1,16 @@
+fos_ck_editor:
+  base_path: "fosckeditor"
+  js_path:   "fosckeditor/ckeditor.js"
+  default_config: my_config
+  configs:
+    my_config:
+      extraPlugins: ["codesnippet", "spoiler"]
+      codeSnippet_theme: 'monokai_sublime'
+      toolbar: [ ["Bold", "Italic", "Underline", "Strike"], ["Link", "Blockquote", "CodeSnippet","Spoiler",  "Smiley" ], ["BulletedList", "NumberedList"], ["JustifyLeft", "JustifyCenter", "JustifyRight", "JustifyBlock"], ["TextColor", "FontSize"], ["Image"] ]
+    plugins:
+      codesnippet:
+        path:     "/bundles/codesnippet"
+        filename: "plugin.js"
+      spoiler:
+        path:     "/bundles/spoiler/"
+        filename: "plugin.js"

@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-sign-in"></i> Connexion
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <div class="mt-5">
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% if app.user %}
+                <div class="mb-3">
+                    You are logged in as {{ app.user.username }}, <a href="{{ path('app_logout') }}">Logout</a>
+                </div>
+
+            {% else %}
+                <form method="post" id="loginForm">
+                    <h1 class="h3 mb-3 font-weight-normal">Connexion</h1>
+
+                    <div class="form-group">
+                        <label for="inputUsername">Username</label>
+                        <input type="text" value="{{ last_username }}" name="username" id="inputUsername"
+                               class="form-control"
+                               required autofocus>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPassword">Password</label>
+                        <input type="password" name="password" id="inputPassword" class="form-control" required>
+
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="hidden" name="_csrf_token" id="_csrf_token"
+                               value="{{ csrf_token('authenticate') }}"
+                        >
+                        <input type="checkbox" name="_remember_me" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Se souvenir de moi</label>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-lg btn-primary">Connexion</button>
+                        <a href="{{ path('app_register') }}" class="btn btn-lg btn-success">Inscription</a>
+
+                    </div>
+
+
+                </form>
+
+
+            {% endif %}
+
+
+        </div>
+    </div>
+{% endblock %}

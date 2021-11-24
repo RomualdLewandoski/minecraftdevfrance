@@ -1,0 +1,58 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Forum
+            <small>Liste des Forums</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Forums</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{{ path('forum_new') }}" class="btn btn-sm btn-success">Create new</a>
+            </div>
+        </div>
+
+        <table class="table mt-4">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Description</th>
+                <th>Position</th>
+                <th>IsLocked</th>
+                <th>IsActive</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for forum in forums %}
+                <tr>
+                    <td>{{ forum.id }}</td>
+                    <td>{{ forum.nom }}</td>
+                    <td>{{ forum.description }}</td>
+                    <td>{{ forum.position }}</td>
+                    <td>{{ forum.isLocked ? 'Yes' : 'No' }}</td>
+                    <td>{{ forum.isActive ? 'Yes' : 'No' }}</td>
+                    <td>
+                        <a href="{{ path('forum_show', {'id': forum.id}) }}" class="btn btn-primary btn-sm">show</a>
+                        <a href="{{ path('forum_edit', {'id': forum.id}) }}" class="btn btn-warning btn-sm">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="7">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

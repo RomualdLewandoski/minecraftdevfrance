@@ -1,0 +1,911 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1 py-1">
+            <ol class="breadcrumb mt-1">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-comments"></i> {{ topic.forum.frontDisplayName|raw }} <i
+                                class="fas fa-arrow-right"></i> {{ topic.titre }}
+                    </a>
+                </li>
+            </ol>
+            <br>
+            <ol class="breadcrumb mt-4">
+                <li>
+                    <a href="{{ path('view_forum', {'id' : topic.forum.id}) }}">
+                        <i class="fas fa-arrow-left"></i> retour au forum
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1 class="h3">Lecture de : {% if topic.isPined %} <i
+                                class="fas fa-thumbtack"></i>{% elseif topic.isLocked %} <i
+                                class="fas fa-lock"></i> {% endif %} {{ topic.titre }}</h1>
+                    {% for tag in topic.tags %}
+                        <span class="badge badge-pill"
+                              style="color: {{ tag.textColor }}; background-color: {{ tag.color }}">{{ tag.nom }}</span>
+                    {% endfor %}
+                </div>
+                <div class="col-md-4 text-right">
+
+                    {% if topic.isLocked == false %}
+                        <a href="#répondre"
+                           class="btn btn-primary btn-new-toppic"><i class="fas fa-plus"></i> Répondre au sujet</a>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- PAGINATOR -->
+            <div class=" mt-2 mb-3">
+                <div class="offset-md-4 col-md-4">
+                    {% if replies != null %}
+                        {{ knp_pagination_render(replies) }}
+                    {% endif %}
+                </div>
+            </div>
+            <!-- END PAGINATOR -->
+
+            <!--TOPIC CONTENT -->
+            <div class="card mt-2 mb-0">
+                <div class="card-body py-0 pl-0">
+                    <div class="row">
+                        <div class="col-md-2 border-right authorInfo p-4">
+                            <div class="row info-users">
+                                <div class="col-md-12">
+                                    <h4 {% if topic.author.isDoom and topic.author.useDoomFont %} class="h6" {% endif %}>
+                                        <a class="name-topic {% if topic.author.isDoom and topic.author.useDoomFont %} doom {% endif %}"
+                                           href="{{ path('view_user', {'username': topic.author.username}) }}">{{ topic.author.username }}
+                                            {% if topic.author.isOnline %}
+                                                <i class="d-md-none d-lg-none d-xl-none fa online-txt"></i>
+                                            {% endif %}
+                                            {% if topic.author.isKonami %}
+                                                <i class="fas fa-gamepad"></i>
+                                            {% endif %}
+                                            {% if topic.author.isCookieMaster %}
+                                                <i class="fas fa-cookie-bite"></i>
+                                            {% endif %}
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div class="d-none d-md-block col-md-12">
+                                    {% if topic.author.isOnline %}
+                                        <span class="online"></span>
+                                    {% endif %}
+                                    {% if topic.author.isMinecraftAvatar == true and topic.author.userInfo.minecraft != null %}
+                                        {{ getMcSkin(topic.author.userInfo.minecraft, "rounded-circle icon-avatar-topic")|raw }}
+                                    {% else %}
+                                        <img class="rounded-circle icon-avatar-topic"
+                                             src="{{ gravatar(topic.author.email) }}">
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-12">
+                                    <p class="card-text name-topic">
+                                        {% if
+                                            'ROLE_ADMIN' in topic.author.roles %}
+                                            <span class="badge badge-primary badge-danger mr-1"><i
+                                                        class="fas fa-star"></i> Super-Admin</span>
+                                        {% endif %}
+                                        {% for rank in topic.author.userRanks %}
+                                            <span class="badge"
+                                                  style="background-color: {{ rank.color }}; color: white">{{ rank.name }}</span>
+                                        {% endfor %}
+
+                                        {% if topic.author.isKonami %}
+                                            <br><span class="badge badge-danger"><i
+                                                    class="fas fa-egg"></i> Cheater</span>
+                                        {% endif %}
+                                        {% if topic.author.isDoom %}
+                                            <br><span class="badge badge-danger"><i class="fas fa-egg"></i> The Doom Slayer</span>
+                                        {% endif %}
+                                        {% if topic.author.isCookieMaster %}
+                                            <br><span class="badge badge-danger"><i class="fas fa-egg"></i> Cookie Master</span>
+                                        {% endif %}
+
+                                    </p>
+                                    <i class="fas fa-heart-circle"></i><span
+                                            class="nbr-like">{{ topic.author.totalLike }}</span>
+                                    <p class="card-text sub-title">{{ topic.author.topics|length }} Sujets</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-10 p-4">
+                            <div class="row">
+                                <div class="col-md-10 header-topic-read">
+                                    <p>Posté le {{ topic.postedAt|date("d / m / Y à H:i") }}</p>
+                                </div>
+                                <div class="col-md-2 menu-right-topic-read">
+                                    <!--<span class="badge badge-pill badge-secondary">Author</span>-->
+                                    {% if canManageForum %}
+                                        <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                           aria-haspopup="true" aria-expanded="false"></i>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item"
+                                               href="{{ path('lock_topic', {'id': topic.id}) }}"><i
+                                                        class="fas fa-lock"></i> {{ topic.isLocked ? "Ouvrir" : "Fermer" }}
+                                            </a>
+                                            <a class="dropdown-item" href="{{ path('pin_topic', {'id': topic.id}) }}"><i
+                                                        class="fas fa-thumbtack"></i> {{ topic.isPined ? "dé-épingler" : "épingler" }}
+                                            </a>
+                                            <a class="dropdown-item" href="#" data-toggle="modal"
+                                               data-target="#exampleModalCenter"><i class="fas fa-arrows-alt"></i>
+                                                Déplacer</a>
+                                            <a class="dropdown-item"
+                                               href="{{ path('edit_topic', {'id': topic.id}) }}"><i
+                                                        class="fas fa-clipboard"></i>
+                                                Editer</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item"
+                                               href="{{ path('delete_topic', {'id' : topic.id}) }}"><i
+                                                        class="fas fa-trash"></i> Supprimer</a>
+                                        </div>
+                                    {% else %}
+                                        {% if app.user != null and topic.author == app.user %}
+                                            <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                               aria-haspopup="true" aria-expanded="false"></i>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item"
+                                                   href="{{ path('edit_topic', {'id': topic.id}) }}"><i
+                                                            class="fas fa-clipboard"></i>
+                                                    Editer</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item"
+                                                   href="{{ path('delete_topic', {'id' : topic.id}) }}"><i
+                                                            class="fas fa-trash"></i> Supprimer</a>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+
+
+                                </div>
+                                <div class="col-md-12">
+                                    {{ topic.message|raw }}
+                                    <hr>
+                                    {% if topic.author.signature %}
+                                        {{ topic.author.signature|raw }}
+                                        <hr>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-12">
+                                    {% if canManageForum %}
+                                        <a href="#"
+                                           class="name-topic {% if app.user.superLikeTopic(topic) %} text-warning {% endif %} "
+                                           id="superLikeTopic" data-toggle="tooltip" data-bs-tooltip=""
+                                           data-placement="top"
+                                           title="Like admin">
+                                            <i class="far fa-trophy"></i> <span
+                                                    id="topicSuperLikeCount"> {{ topic.superLikeTopics|length }}</span>
+                                        </a>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#superLikeTopic').click((event) => {
+                                                    event.preventDefault()
+                                                    $.get("{{ path('superlike_topics', {'id': topic.id}) }}", (data) => {
+                                                        if (data.action == true) {
+                                                            $('#superLikeTopic').addClass("text-warning")
+                                                        } else {
+                                                            $('#superLikeTopic').removeClass("text-warning")
+                                                        }
+
+                                                        $('#topicSuperLikeCount').text(data.total)
+                                                    })
+                                                })
+                                            })
+                                        </script>
+                                    {% else %}
+                                        <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                              title="Like admin">
+                                        <i class="far fa-trophy"></i><span
+                                                    class="mr-2"> {{ topic.superLikeTopics|length }}</span>
+                                        </span>
+
+                                    {% endif %}
+                                    {% if app.user  and app.user != topic.author %}
+                                        <a href="#"
+                                           class="name-topic {% if app.user.likedTopic(topic) %} text-success {% endif %}"
+                                           id="likeTopic" data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                           title="Like">
+                                            <i class="far fa-heart"></i> <span
+                                                    id="topicLikeCount">{{ topic.likes|length }}</span>
+                                        </a>
+                                        <a href="#"
+                                           class="name-topic {% if app.user.dislikedTopic(topic) %} text-danger {% endif %}"
+                                           id="dislikeTopic" data-toggle="tooltip" data-bs-tooltip=""
+                                           data-placement="top"
+                                           title="Dislike">
+                                            <i class="far fa-thumbs-down"></i> <span
+                                                    id="topicDislikeCount">{{ topic.dislike|length }}</span>
+                                        </a>
+                                        <script>
+                                            $(document).ready(function () {
+                                                $('#likeTopic').click((event) => {
+                                                    event.preventDefault()
+                                                    $.get("{{ path('like_topic', {'id': topic.id}) }}", (data) => {
+                                                        if (data.action == true) {
+                                                            $('#likeTopic').addClass("text-success")
+                                                            getTrophy()
+
+                                                        } else {
+                                                            $('#likeTopic').removeClass("text-success")
+                                                        }
+                                                        if (data.switch == true) {
+                                                            $('#dislikeTopic').removeClass("text-danger")
+                                                        }
+                                                        $('#topicLikeCount').text(data.like)
+                                                        $('#topicDislikeCount').text(data.dislike)
+                                                    })
+                                                })
+
+                                                $('#dislikeTopic').click((event) => {
+                                                    event.preventDefault()
+                                                    $.get("{{ path('dislike_topic', {'id': topic.id}) }}", (data) => {
+                                                        if (data.action == true) {
+                                                            $('#dislikeTopic').addClass("text-danger")
+                                                        } else {
+                                                            $('#dislikeTopic').removeClass("text-danger")
+                                                        }
+                                                        if (data.switch == true) {
+                                                            $('#likeTopic').removeClass("text-success")
+                                                        }
+                                                        $('#topicLikeCount').text(data.like)
+                                                        $('#topicDislikeCount').text(data.dislike)
+                                                    })
+                                                })
+                                            })
+
+                                        </script>
+                                    {% endif %}
+                                    {% if app.user==null or app.user == topic.author %}
+                                        <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                              title="Like">
+
+                                        <i class="far fa-heart"></i> {{ topic.likes|length }}
+                                        </span>
+                                        <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                              title="Dislike">
+                                        <i class="far fa-thumbs-down"></i> {{ topic.dislike|length }}
+                                        </span>
+                                    {% endif %}
+                                    <!--<span class="rep-topic-read">Repondre</span>-->
+                                    <span class="rep-topic-read"><a href="#" class="reaction" data-type="topic"
+                                                                    data-id="{{ topic.id }}"> Réactions</a></span>
+
+                                    {% if app.user %}
+                                        <span class="rep-topic-read"><a href="#" class="report" data-type="topic"
+                                                                        data-id="{{ topic.id }}"> Signaler</a>
+                                        </span>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <!-- END TOPIC CONTENT -->
+            <!-- SOLUTION CONTENT -->
+            {% if topic.solution != null %}
+                <div class="card mt-3 mb-0 ">
+                    <div class="card-body py-0 pl-0">
+                        <div class="row replySolution">
+                            <div class="col-md-2 border-right authorInfo p-4">
+                                <div class="row info-users">
+                                    <div class="col-md-12">
+                                        <h4 {% if topic.solution.author.isDoom and topic.solution.author.useDoomFont %} class="h6" {% endif %}>
+                                            <a class="name-topic {% if topic.solution.author.isDoom and topic.solution.author.useDoomFont %} doom {% endif %}"
+                                               href="{{ path('view_user', {'username': topic.solution.author.username}) }}">{{ topic.solution.author.username }}
+                                                {% if topic.solution.author.isOnline %}
+                                                    <i class="d-md-none d-lg-none d-xl-none fa online-txt"></i>
+                                                {% endif %}
+                                                {% if topic.solution.author.isKonami %}
+                                                    <i class="fas fa-gamepad"></i>
+                                                {% endif %}
+                                                {% if topic.solution.author.isCookieMaster %}
+                                                    <i class="fas fa-cookie-bite"></i>
+                                                {% endif %}
+                                            </a>
+                                        </h4>
+
+                                    </div>
+                                    <div class="d-none d-md-block col-md-12">
+                                        {% if topic.solution.author.isOnline %}
+                                            <span class="online"></span>
+                                        {% endif %}
+                                        {% if topic.solution.author.isMinecraftAvatar == true and topic.solution.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(topic.solution.author.userInfo.minecraft, "rounded-circle icon-avatar-topic")|raw }}
+                                        {% else %}
+                                            <img class="rounded-circle icon-avatar-topic"
+                                                 src="{{ gravatar(topic.solution.author.email) }}">
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <p class="card-text name-topic">
+                                            {% if
+                                                'ROLE_ADMIN' in topic.solution.author.roles %}
+                                                <span class="badge badge-primary badge-danger mr-1 "><i
+                                                            class="fas fa-star"></i> Super-Admin</span>
+                                            {% endif %}
+                                            {% for rank in topic.solution.author.userRanks %}
+                                                <span class="badge"
+                                                      style="background-color: {{ rank.color }}; color: white">{{ rank.name }}</span>
+                                            {% endfor %}
+
+                                            {% if topic.solution.author.isKonami %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> Cheater</span>
+                                            {% endif %}
+                                            {% if topic.solution.author.isDoom %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> The Doom Slayer</span>
+                                            {% endif %}
+                                            {% if topic.solution.author.isCookieMaster %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> Cookie Master</span>
+                                            {% endif %}
+
+                                        </p>
+                                        <i class="fas fa-heart-circle"></i><span
+                                                class="nbr-like">{{ topic.solution.author.totalLike }}</span>
+                                        <p class="card-text sub-title">{{ topic.solution.author.topics|length }}
+                                            Sujets</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10 p-4">
+                                <div class="row">
+                                    <div class="col-md-9 header-topic-read">
+                                        <p>Posté le {{ topic.solution.postedAt|date("d / m / Y à H:i") }}</p>
+                                    </div>
+                                    <div class="col-md-3 menu-right-topic-read">
+                                        <span class="badge badge-pill badge-success">SOLUTION</span>
+                                        {% if topic.author == topic.solution.author %}
+                                            <span class="badge badge-pill badge-secondary">Auteur</span>
+                                        {% endif %}
+                                        {% if app.user %}
+                                            {% if app.user == topic.solution.author and canManageForum == false %}
+                                                <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                                   aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('solution_set', {'id': topic.solution.id}) }}"><i
+                                                                class="fas fa-star"></i>
+                                                        Retirer comme solution</a>
+                                                </div>
+                                            {% endif %}
+                                            {% if topic.solution.author == app.user or canManageForum %}
+                                                <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                                   aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu">
+                                                    {% if canManageForum %}
+                                                        <a class="dropdown-item"
+                                                           href="{{ path('solution_set', {'id': topic.solution.id}) }}"><i
+                                                                    class="fas fa-star"></i>
+                                                            Retirer comme solution</a>
+                                                    {% endif %}
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('edit_reply', {'id': topic.solution.id}) }}"><i
+                                                                class="fas fa-clipboard"></i>
+                                                        Editer</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('delete_reply', {'id' : topic.solution.id}) }}"><i
+                                                                class="fas fa-trash"></i> Supprimer</a>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {{ topic.solution.message|raw }}
+                                        <hr>
+
+                                        {% if topic.solution.author.signature %}
+                                            {{ topic.solution.author.signature|raw }}
+                                            <hr>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {% if canManageForum %}
+                                            <a href="#"
+                                               class="superlike-reply name-topic {% if app.user.superLikeReply(topic.solution) %} text-warning {% endif %} "
+                                               reply-id="{{ topic.solution.id }}"
+                                               id="replySuperlike{{ topic.solution.id }}" data-toggle="tooltip"
+                                               data-bs-tooltip="" data-placement="top"
+                                               title="Like admin">
+                                                <i class="far fa-trophy"></i> <span
+                                                        id="replySuperLikeCount{{ topic.solution.id }}"> {{ topic.solution.superLikeReplies|length }}</span>
+                                            </a>
+                                        {% else %}
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Like admin">
+                                            <i class="far fa-trophy"></i><span
+                                                        class="mr-2"> {{ topic.solution.superLikeReplies|length }}</span>
+                                            </span>
+                                        {% endif %}
+                                        {% if app.user and app.user != topic.solution.author %}
+                                            <a href="#"
+                                               class="like-reply name-topic {% if app.user.likedreply(topic.solution) %} text-success {% endif %}"
+                                               reply-id="{{ topic.solution.id }}"
+                                               id="replyLike{{ topic.solution.id }}"
+                                               data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                               title="Like"
+                                            >
+                                                <i class="far fa-heart"></i> <span
+                                                        id="replyLikeCount{{ topic.solution.id }}">{{ topic.solution.likes|length }}</span>
+                                            </a>
+                                            <a href="#"
+                                               class="dislike-reply name-topic {% if app.user.dislikedReply(topic.solution) %} text-danger {% endif %}"
+                                               reply-id="{{ topic.solution.id }}"
+                                               id="replyDislike{{ topic.solution.id }}"
+                                               data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                               title="Dislike"
+                                            >
+                                                <i class="far fa-thumbs-down"></i> <span
+                                                        id="replyDislikeCount{{ topic.solution.id }}">{{ topic.solution.dislike|length }}</span>
+                                            </a>
+
+                                        {% endif %}
+                                        {% if app.user==null or app.user == topic.solution.author %}
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Like">
+                                            <i class="far fa-heart"></i> {{ topic.solution.likes|length }}
+                                            </span>
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Dislike">
+                                            <i class="far fa-thumbs-down"></i> {{ topic.solution.dislike|length }}
+                                            </span>
+                                        {% endif %}
+                                        <!--<span class="rep-topic-read"><a href="#"> Repondre</a></span>-->
+                                        <span class="rep-topic-read"><a href="?reply={{ topic.solution.id }}"> Voir</a></span>
+                                        <span class="rep-topic-read"><a href="#" class="reaction" data-type="reply"
+                                                                        data-id="{{ topic.solution.id }}"> Réactions</a></span>
+
+                                        {% if app.user %}
+                                            <span class="rep-topic-read"><a href="#" class="report" data-type="reply"
+                                                                            data-id="{{ topic.solution.id }}"> Signaler</a>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+            {% endif %}
+            <!-- END SOLUTION CONTENT -->
+            <!-- REPLY LIST -->
+            {% for reply in replies %}
+                <!-- REPLY ITEM -->
+                <div class="card mt-3 mb-0" id="replyContent{{ reply.id }}">
+                    <div class="card-body py-0 pl-0">
+                        <div class="row">
+                            <div class="col-md-2 border-right authorInfo p-4">
+                                <div class="row info-users">
+                                    <div class="col-md-12">
+                                        <h4 {% if reply.author.isDoom and reply.author.useDoomFont %} class="h6" {% endif %}>
+                                            <a class="name-topic {% if reply.author.isDoom and reply.author.useDoomFont %} doom {% endif %}"
+                                               href="{{ path('view_user', {'username': reply.author.username}) }}">{{ reply.author.username }}
+                                                {% if reply.author.isOnline %}
+                                                    <i class="d-md-none d-lg-none d-xl-none fa online-txt"></i>
+                                                {% endif %}
+                                                {% if reply.author.isKonami %}
+                                                    <i class="fas fa-gamepad"></i>
+                                                {% endif %}
+                                                {% if reply.author.isCookieMaster %}
+                                                    <i class="fas fa-cookie-bite"></i>
+                                                {% endif %}
+                                            </a>
+                                        </h4>
+
+                                    </div>
+                                    <div class="d-none d-md-block col-md-12">
+                                        {% if reply.author.isOnline %}
+                                            <span class="online"></span>
+                                        {% endif %}
+                                        {% if reply.author.isMinecraftAvatar == true and reply.author.userInfo.minecraft != null %}
+                                            {{ getMcSkin(reply.author.userInfo.minecraft, "rounded-circle icon-avatar-topic")|raw }}
+                                        {% else %}
+                                            <img class="rounded-circle icon-avatar-topic"
+                                                 src="{{ gravatar(reply.author.email) }}">
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <p class="card-text name-topic">
+                                            {% if
+                                                'ROLE_ADMIN' in reply.author.roles %}
+                                                <span class="badge badge-primary badge-danger mr-1 "><i
+                                                            class="fas fa-star"></i> Super-Admin</span>
+                                            {% endif %}
+                                            {% for rank in reply.author.userRanks %}
+                                                <span class="badge"
+                                                      style="background-color: {{ rank.color }}; color: white">{{ rank.name }}</span>
+                                            {% endfor %}
+                                            {% if reply.author.isKonami %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> Cheater</span>
+                                            {% endif %}
+                                            {% if reply.author.isDoom %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> The Doom Slayer</span>
+                                            {% endif %}
+                                            {% if reply.author.isCookieMaster %}
+                                                <br><span class="badge badge-danger"><i class="fas fa-egg"></i> Cookie Master</span>
+                                            {% endif %}
+                                        </p>
+                                        <i class="fas fa-heart-circle"></i><span
+                                                class="nbr-like">{{ reply.author.totalLike }}</span>
+                                        <p class="card-text sub-title">{{ reply.author.topics|length }} Sujets</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-10 p-4">
+                                <div class="row">
+                                    <div class="col-md-10 header-topic-read">
+                                        <p>Posté le {{ reply.postedAt|date("d / m / Y à H:i") }}</p>
+                                    </div>
+                                    <div class="col-md-2 menu-right-topic-read">
+                                        {% if topic.author == reply.author %}
+                                            <span class="badge badge-pill badge-secondary">Auteur</span>
+                                        {% endif %}
+                                        {% if app.user %}
+                                            {% if app.user == topic.author and canManageForum == false %}
+                                                <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                                   aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('solution_set', {'id': reply.id}) }}"><i
+                                                                class="fas fa-star"></i>
+                                                        Marquer comme solution</a>
+                                                </div>
+                                            {% endif %}
+                                            {% if reply.author == app.user or canManageForum %}
+                                                <i class="fas fa-ellipsis-h dropdown-menu-icon" data-toggle="dropdown"
+                                                   aria-haspopup="true" aria-expanded="false"></i>
+                                                <div class="dropdown-menu">
+                                                    {% if canManageForum %}
+                                                        <a class="dropdown-item"
+                                                           href="{{ path('solution_set', {'id': reply.id}) }}"><i
+                                                                    class="fas fa-star"></i>
+                                                            Marquer comme solution</a>
+                                                    {% endif %}
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('edit_reply', {'id': reply.id}) }}"><i
+                                                                class="fas fa-clipboard"></i>
+                                                        Editer</a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <a class="dropdown-item"
+                                                       href="{{ path('delete_reply', {'id' : reply.id}) }}"><i
+                                                                class="fas fa-trash"></i> Supprimer</a>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {{ reply.message|raw }}
+                                        <hr>
+                                        {% if reply.author.signature %}
+                                            {{ reply.author.signature|raw }}
+                                            <hr>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-12">
+                                        {% if canManageForum %}
+                                            <a href="#"
+                                               class="superlike-reply name-topic {% if app.user.superLikeReply(reply) %} text-warning {% endif %} "
+                                               reply-id="{{ reply.id }}"
+                                               id="replySuperlike{{ reply.id }}"
+                                               data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                               title="Like admin"
+                                            >
+                                                <i class="far fa-trophy"></i> <span
+                                                        id="replySuperLikeCount{{ reply.id }}"> {{ reply.superLikeReplies|length }}</span>
+                                            </a>
+                                        {% else %}
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Like admin">
+
+                                            <i class="far fa-trophy"></i><span
+                                                        class="mr-2"> {{ reply.superLikeReplies|length }}</span>
+                                            </span>
+                                        {% endif %}
+                                        {% if app.user and app.user != reply.author %}
+                                            <a href="#"
+                                               class="like-reply name-topic {% if app.user.likedreply(reply) %} text-success {% endif %}"
+                                               reply-id="{{ reply.id }}"
+                                               id="replyLike{{ reply.id }}"
+                                               data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                               title="Like"
+                                            >
+                                                <i class="far fa-heart"></i> <span
+                                                        id="replyLikeCount{{ reply.id }}">{{ reply.likes|length }}</span>
+                                            </a>
+                                            <a href="#"
+                                               class="dislike-reply name-topic {% if app.user.dislikedReply(reply) %} text-danger {% endif %}"
+                                               reply-id="{{ reply.id }}"
+                                               id="replyDislike{{ reply.id }}"
+                                               data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                               title="Dislike"
+                                            >
+                                                <i class="far fa-thumbs-down"></i> <span
+                                                        id="replyDislikeCount{{ reply.id }}">{{ reply.dislike|length }}</span>
+                                            </a>
+
+                                        {% endif %}
+                                        {% if app.user==null or app.user == reply.author %}
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Like">
+
+                                            <i class="far fa-heart"></i> {{ reply.likes|length }}
+                                            </span>
+                                            <span data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                                  title="Dislike">
+                                            <i class="far fa-thumbs-down"></i> {{ reply.dislike|length }}
+
+                                            </span>
+                                        {% endif %}
+                                        <!--<span class="rep-topic-read">Repondre</span>-->
+                                        <span class="rep-topic-read"><a href="#" class="reaction" data-type="reply"
+                                                                        data-id="{{ reply.id }}"> Réactions</a></span>
+
+                                        {% if app.user %}
+                                            <span class="rep-topic-read"><a href="#" class="report" data-type="reply"
+                                                                            data-id="{{ reply.id }}"> Signaler</a>
+                                        </span>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <!-- END REPLY ITEM -->
+            {% endfor %}
+            <!-- END REPLY LIST -->
+            <!-- PAGINATOR -->
+            <div class=" mt-2 mb-3">
+                <div class="offset-md-4 col-md-4">
+                    {% if replies != null %}
+                        {{ knp_pagination_render(replies) }}
+                    {% endif %}
+                </div>
+            </div>
+            <!-- END PAGINATOR -->
+            <!--REPLYFORM -->
+            {% if app.user and topic.isLocked == false %}
+                <div class="card mt-3" id="répondre">
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        <div class="text-right">
+                            <button class="btn btn-primary btn-sm">
+                                <strong>Répondre</strong></button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            {% endif %}
+            <!--END REPLYFORM-->
+        </div>
+    </div>
+    <script>
+        let lastSelected = null;
+        $(document).ready(() => {
+            var hash = window.top.location.hash.substr(1);
+            if (hash.startsWith("replyContent")) {
+                lastSelected = $('#' + hash);
+                $('#' + hash).addClass("replySelected")
+            }
+
+            $('.like-reply').each(function (index) {
+                $(this).on("click", function (event) {
+                    event.preventDefault()
+                    let reply = $(this)
+                    let id = reply.attr("reply-id")
+                    $.post("{{ path('like_reply') }}", {
+                        'id': id
+                    }, (data) => {
+                        if (data.action == true) {
+                            $('#replyLike' + id).addClass("text-success")
+                            getTrophy()
+                        } else {
+                            $('#replyLike' + id).removeClass("text-success")
+                        }
+                        if (data.switch == true) {
+                            $('#replyDislike' + id).removeClass("text-danger")
+                        }
+                        $('#replyLikeCount' + id).text(data.like)
+                        $('#replyDislikeCount' + id).text(data.dislike)
+                    })
+                })
+            })
+
+            $('.dislike-reply').each(function (index) {
+                $(this).on("click", function (event) {
+                    event.preventDefault()
+                    let reply = $(this)
+                    let id = reply.attr("reply-id")
+                    $.post("{{ path('dislike_reply') }}", {
+                        'id': id
+                    }, (data) => {
+                        if (data.action == true) {
+                            $('#replyDislike' + id).addClass("text-danger")
+                        } else {
+                            $('#replyDislike' + id).removeClass("text-danger")
+                        }
+                        if (data.switch == true) {
+                            $('#replyLike' + id).removeClass("text-success")
+                        }
+                        $('#replyLikeCount' + id).text(data.like)
+                        $('#replyDislikeCount' + id).text(data.dislike)
+                    })
+                })
+            })
+            $('.superlike-reply').each(function (index) {
+                $(this).on("click", function (event) {
+                    event.preventDefault()
+                    let reply = $(this)
+                    let id = reply.attr("reply-id")
+                    $.post("{{ path('superlike_reply') }}", {
+                        'id': id
+                    }, (data) => {
+                        if (data.action == true) {
+                            $('#replySuperlike' + id).addClass("text-warning")
+                        } else {
+                            $('#replySuperlike' + id).removeClass("text-warning")
+                        }
+
+                        $('#replySuperLikeCount' + id).text(data.total)
+                    })
+                })
+
+            })
+
+        })
+
+        $(window).bind('hashchange', function (e) {
+            var hash = window.top.location.hash.substr(1);
+            if (hash.startsWith("replyContent")) {
+                if (lastSelected != null) {
+                    lastSelected.removeClass("replySelected")
+                }
+                lastSelected = $('#' + hash);
+                $('#' + hash).addClass("replySelected")
+            }
+        });
+
+
+    </script>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Deplacer le sujet</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(moveTopic) }}
+                    {{ form_widget(moveTopic) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button class="btn btn-primary">Deplacer</button>
+                </div>
+                {{ form_end(moveTopic) }}
+            </div>
+        </div>
+    </div>
+
+
+    <!--Reaction Modal -->
+    <div class="modal fade" id="reactionModal" tabindex="-1" role="dialog" aria-labelledby="reactionModalTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reactionModalTitle">Liste des réactions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="nav nav-tabs profile-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" role="tab" data-toggle="tab" href="#superLikeTab">
+                                <i class="far fa-trophy"></i> Super like
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" role="tab" data-toggle="tab" href="#likeTab">
+                                <i class="far fa-heart"></i> Like
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" role="tab" data-toggle="tab" href="#dislikeTab">
+                                <i class="far fa-thumbs-down"></i> Dislike
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-2 pr-2 pl-2 pb-0">
+                        <div class="tab-pane active pt-2 pl-2 pr-2" role="tabpanel" id="superLikeTab">
+                            superlike
+                        </div>
+                        <div class="tab-pane pt-2 pl-2 pr-2" role="tabpanel" id="likeTab">
+                            like
+                        </div>
+                        <div class="tab-pane  pt-2 pl-2 pr-2" role="tabpanel" id="dislikeTab">
+                            dislike
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reaction loader and display -->
+    <script>
+        $('.reaction').each(function (index) {
+            $(this).on("click", function (event) {
+                event.preventDefault()
+                let type = $(this).attr("data-type")
+                let id = $(this).attr("data-id")
+                $('#superLikeTab').empty()
+                $('#likeTab').empty()
+                $('#dislikeTab').empty()
+                $.post("{{ path('getReaction') }}", {
+                    type: type,
+                    id: id
+                }, (data) => {
+                    if (data.state == 0) {
+                        $('#superLikeTab').append(data.err)
+                        $('#likeTab').append(data.err)
+                        $('#dislikeTab').append(data.err)
+                    } else {
+                        let x;
+                        for (x in data.data) {
+                            let obj = data.data[x]
+                            var url = '{{ path("view_user", {'username': 'article_id'}) }}';
+                            url = url.replace("article_id", obj.username);
+                            if (obj.type == "like") {
+                                $('#likeTab').append('<a href="' + url + '" class="name-topic"><img class="rounded-circle icon-avatar-topic" src="' + obj.email + '">' + " " +
+                                    obj.username + '</a><hr>')
+                            } else if (obj.type == "dislike") {
+                                $('#dislikeTab').append('<a href="' + url + '" class="name-topic"><img class="rounded-circle icon-avatar-topic" src="' + obj.email + '">' + " " +
+                                    obj.username + '</a><hr>')
+                            } else {
+                                $('#superLikeTab').append('<a href="' + url + '" class="name-topic"><img class="rounded-circle icon-avatar-topic" src="' + obj.email + '">' + " " +
+                                    obj.username + '</a><hr>')
+                            }
+                        }
+                    }
+                    $('#reactionModal').modal('show')
+                })
+            })
+        })
+
+
+    </script>
+
+{% endblock %}

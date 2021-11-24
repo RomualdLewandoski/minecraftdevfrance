@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-comments"></i> Création d'un sujet
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="card">
+
+                {{ form_start(form) }}
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <div class="row">
+                            <div class="col-md-8">
+                                {{ form_row(form.titre) }}
+                                {{ form_row(form.message) }}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card mt-4" style="width: 18rem;">
+                                    <div class="card-body">
+                                        {{ form_row(form.tags) }}
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="footer-topic">
+                                    {% if hasBrouillon %}
+                                    <button class="btn btn-warning" id="deleteDraft">Supprimer le brouillon</button>
+                                    {% endif %}
+                                    <button class="btn btn-primary">Submit topic</button>
+                                </div>
+                            </div>
+                            <div class="col-md-5"></div>
+                        </div>
+                    </blockquote>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var titre = ""
+        var message = ""
+
+
+        function updateBrouillon() {
+            let realTitre = $('#topic_titre').val()
+            let realMessage = CKEDITOR.instances['topic_message'].getData()
+            if (titre != realTitre || message != realMessage) {
+                titre = realTitre
+                message = realMessage
+                $.post("{{ path('brouillon') }}", {
+                    userName: "{{ app.user.username }}",
+                    forumId: "{{ forum.id }}",
+                    titre: titre,
+                    message: message
+                }, (data) => {
+                    if (data.state == 1) {
+                        console.error(data.err)
+                    }
+                })
+            }
+            setTimeout(updateBrouillon, 3000)
+        }
+
+        $(document).ready(() => {
+            updateBrouillon()
+            $('#deleteDraft').click((event) => {
+                console.log("call delete");
+                event.preventDefault()
+                titre = ""
+                message = ""
+                $.post("{{ path('brouillon_delete') }}", {
+                    userName: "{{ app.user.username }}",
+                    forumId: "{{ forum.id }}"
+                }, (data) => {
+                    if (data.state == 1){
+                        console.error(data.err)
+                    } else if(data.state == 0){
+                        $('#topic_titre').val("")
+                        CKEDITOR.instances['topic_message'].setData("")
+                    }
+                })
+            })
+        })
+    </script>
+{% endblock %}
+

@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-user"></i> Espace membre
+                    </a>
+                </li>
+                <li>Paramètres</li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div>
+                        <ul class="nav nav-tabs profile-tabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" role="tab" data-toggle="tab" href="#security">
+                                    <i class="fas fa-cogs mr-2"></i> Paramètres de sécurité
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" role="tab" data-toggle="tab" href="#about">
+                                    <i class="fas fa-info mr-2"></i> A propos de vous
+                                </a>
+                            </li>
+                        </ul>
+
+                            {% for flashError in app.flashes('error') %}
+                                <div class="alert alert-danger my-2 mx-2">
+                                    {{ flashError }}
+                                </div>
+                            {% endfor %}
+                        {% for flashError in app.flashes('success') %}
+                            <div class="alert alert-success my-2 mx-2">
+                                {{ flashError }}
+                            </div>
+                        {% endfor %}
+
+                        <div class="tab-content pt-2 pr-2 pl-2 pb-2">
+                            <div class="tab-pane active pt-2 pl-2 pr-2" role="tabpanel" id="security">
+                                {{ form_start(userSettings) }}
+                                {{ form_widget(userSettings) }}
+                                <div class="text-center">
+                                    <button class="btn btn-success btn-lg">
+                                        <strong>Sauvegarder</strong></button>
+                                </div>
+                                {{ form_end(userSettings) }}
+                            </div>
+                            <div class="tab-pane pt-2 pl-2 pr-2" role="tabpanel" id="about">
+                                {{ form_start(userInfo) }}
+                                {{ form_widget(userInfo) }}
+                                <div class="text-center">
+                                    <button class="btn btn-success btn-lg">
+                                        <strong>Sauvegarder</strong></button>
+                                </div>
+                                {{ form_end(userInfo) }}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

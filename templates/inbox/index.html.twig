@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-envelope"></i> Messagerie
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <h1 class="h3 mt-4">Boite de réception</h1>
+        <div class="mt-3">
+            <div class="row inbox">
+                {% embed('inbox/sideInbox.html.twig') %}
+
+                {% endembed %}
+
+                <div class="col-md-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+
+                            <ul class="messages-list">
+                                {% for convMeta in messages %}
+                                    <li class="{% if convMeta.conversation.isReadByUser(app.user) == false %} unread {% endif %}">
+                                        <a href="{{ path('read_message', {'id': convMeta.conversation.id}) }}">
+                                            <div class="header">
+
+                                                <span class="from"><i class="far fa-tools"></i> {{ convMeta.conversation.getOtherUser(app.user).username }}
+                                                    {% if convMeta.conversation.getOtherUser(app.user).isOnline %}
+                                                        <i class="fa online-txt"></i>
+                                                    {% endif %}
+                                                </span>
+                                                <span class="date"><span
+                                                            class="fa fa-paper-clip"></span>
+                                                    {% if convMeta.conversation.getLastMsg != null %}{{ convMeta.conversation.getLastMsg.postedAt|date("d/m/Y à H:i") }}{% endif %}</span>
+                                            </div>
+
+                                            <div class="description">
+                                                {% if convMeta.conversation.getLastMsg != null %}
+                                                {{ convMeta.conversation.getLastMsg.content|slice(0, 50)|striptags|raw }}...
+                                                    {% else %}
+                                                    Aucun Message dans cette conversation
+                                                {% endif %}
+                                            </div>
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li>
+                                        <div class="description">
+                                            Vous n'avez aucun message dans cette boite
+                                        </div>
+
+                                    </li>
+                                {% endfor %}
+
+
+                            </ul>
+                            <div class="mt-2 ">
+
+                                <div class="offset-md-4 col-md-4">
+                                    {{ knp_pagination_render(messages) }}
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div><!--/.col-->
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

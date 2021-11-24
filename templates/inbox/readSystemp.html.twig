@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fas fa-envelope"></i> Messagerie
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <h1 class="h3 mt-4">Lecture message systeme</h1>
+        <div class="mt-3">
+            <div class="row inbox">
+                {% embed('inbox/sideInbox.html.twig') %}
+
+                {% endembed %}
+
+                <div class="col-md-9">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="card  offset-1 col-md-10">
+                                {{ message.message|raw }}
+                                <hr>
+                                <small class="mb-2">Par <i class="far fa-tools"></i> Système le {{ message.sendAt|date("d/m/Y à H:i") }}</small>
+                            </div>
+                            <div class="card mt-2 p-3 offset-1 col-md-10">Vous ne pouvez pas répondre a ce message</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

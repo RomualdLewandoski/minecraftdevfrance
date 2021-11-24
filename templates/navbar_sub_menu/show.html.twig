@@ -1,0 +1,59 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}NavbarSubMenu{% endblock %}
+
+{% block body %}
+<section class="content-header">
+    <h1>
+        Gestion Navigation
+        <small>Lecture du sous menu</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+        <li><a href="#">Navigation</a></li>
+        <li><a href="#">Sous menu</a></li>
+        <li class="active">Lecture</li>
+    </ol>
+</section>
+
+<div class="dashboard1 mt-2">
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ navbar_sub_menu.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ navbar_sub_menu.nom }}</td>
+            </tr>
+            <tr>
+                <th>Position</th>
+                <td>{{ navbar_sub_menu.position }}</td>
+            </tr>
+            <tr>
+                <th>Value</th>
+                <td>{{ navbar_sub_menu.value }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <div class="row">
+        <div class="col-md-6 text-right">
+            <a href="{{ path('navbar_sub_menu_edit', {'id': navbar_sub_menu.id}) }}"  class="btn btn-warning btn-lg">edit</a>
+        </div>
+        <div class="col-md-6">
+            <form method="post" action="{{ path('navbar_sub_menu_delete', {'id': navbar_sub_menu.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ navbar_sub_menu.id) }}">
+                <button class="btn btn-lg btn-danger">Delete</button>
+            </form>
+
+        </div>
+    </div>
+
+    <a href="{{ path('navbar_sub_menu_index') }}"><i class="fa fa-arrow-left"></i> back to list</a>
+
+</div>
+{% endblock %}

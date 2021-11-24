@@ -1,0 +1,61 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}UserRank{% endblock %}
+
+{% block body %}
+    <h1>UserRank</h1>
+
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ user_rank.id }}</td>
+        </tr>
+        <tr>
+            <th>CanManageForum</th>
+            <td>{{ user_rank.canManageForum ? 'Yes' : 'No' }}</td>
+        </tr>
+        <tr>
+            <th>HasRepportPanel</th>
+            <td>{{ user_rank.hasRepportPanel ? 'Yes' : 'No' }}</td>
+        </tr>
+        <tr>
+            <th>CanManageWall</th>
+            <td>{{ user_rank.canManageWall ? 'Yes' : 'No' }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ user_rank.name }}</td>
+        </tr>
+        <tr>
+            <th>Color</th>
+            <td>{{ user_rank.color }}</td>
+        </tr>
+        <tr>
+            <th>Priority</th>
+            <td>{{ user_rank.Priority }}</td>
+        </tr>
+        <tr>
+            <th>Affichage staff</th>
+            <td>{{ user_rank.isDisplayStaff ? "Oui":"Non" }}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div class="col-md-6 text-right">
+            <a href="{{ path('user_rank_edit', {'id': user_rank.id}) }}" class="btn btn-warning btn-lg">edit</a>
+        </div>
+        <div class="col-md-6">
+            <form method="post" action="{{ path('user_rank_delete', {'id': user_rank.id}) }}"
+                  onsubmit="return confirm('Are you sure you want to delete this item?');">
+                <input type="hidden" name="_method" value="DELETE">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user_rank.id) }}">
+                <button class="btn btn-lg btn-danger">Delete</button>
+            </form>
+
+        </div>
+    </div>
+    <a href="{{ path('user_rank_index') }}"><i class="fa fa-arrow-left"></i> back to list</a>
+
+
+{% endblock %}

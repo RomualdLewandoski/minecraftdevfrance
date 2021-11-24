@@ -1,0 +1,64 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion utilisateurs
+            <small>Liste des permissions</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Utilisateurs</a></li>
+            <li><a href="#">Permissions</a></li>
+            <li class="active">Liste</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+
+        <div class="row">
+            <div class="col-md-12 text-right">
+                <a href="{{ path('user_rank_new') }}" class="btn btn-sm btn-success">Create new</a>
+            </div>
+        </div>
+
+        <table class="table mt-4 table-responsive-md">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Couleur</th>
+                <th>Gestion Forum</th>
+                <th>Gestion Report</th>
+                <th>Gestion Profils</th>
+                <th>Ordre d'affichage</th>
+                <th>Affichage staff</th>
+                <th>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for user_rank in user_ranks %}
+                <tr>
+                    <td>{{ user_rank.id }}</td>
+                    <td >{{ user_rank.name }}</td>
+                    <td ><span class="badge" style="background-color: {{ user_rank.color }}; color: white"> {{ user_rank.color }}</span></td>
+                    <td>{{ user_rank.canManageForum ? 'Oui' : 'Non' }}</td>
+                    <td>{{ user_rank.hasRepportPanel ? 'Oui' : 'Non' }}</td>
+                    <td>{{ user_rank.canManageWall ? 'Oui' : 'Non' }}</td>
+                    <td>{{ user_rank.Priority }}</td>
+                    <td>{{ user_rank.isDisplayStaff ? "Oui" : 'Non' }}</td>
+                    <td>
+                        <a href="{{ path('user_rank_show', {'id': user_rank.id}) }}" class="btn btn-sm btn-primary">show</a>
+                        <a href="{{ path('user_rank_edit', {'id': user_rank.id}) }}" class="btn btn-sm btn-warning">edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+{% endblock %}

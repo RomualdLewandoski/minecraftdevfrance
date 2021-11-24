@@ -1,0 +1,513 @@
+{% set canManageProfil = false %}
+{% set canManageForum = false %}
+{% set hasReport = false %}
+
+{% if app.user %}
+    {% for rank in app.user.userRanks %}
+        {% if rank.canManageWall %}
+            {% set canManageProfil = true %}
+        {% endif %}
+        {% if rank.canManageForum %}
+            {% set canManageForum = true %}
+        {% endif %}
+        {% if rank.hasRepportPanel %}
+            {% set hasReport = true %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>MinecraftDevFrance</title>
+    <meta name="back" content="HazielKaos">
+    <meta name="front" content="HazielKaos / Kaoutiz">
+    <meta name="author" content="HazielKaos / Kaoutiz">
+    <meta property="og:type" content="website">
+    <meta name="description" content="Forum minecraft développement java mcp forge spigot bukkit ">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/fonts/ionicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset("assets/fontawesome/css/all.css") }}">
+    <link rel="stylesheet" href="https://harvesthq.github.io/chosen/chosen.css">
+    <link href="{{ asset('assets/codesnippet/lib/highlight/styles/default.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/codesnippet/lib/highlight/styles/monokai_sublime.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/include/spoiler.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/elements/toastr.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/fm.selectator.jquery.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style3.css') }}">
+
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+
+</head>
+<body>
+{% if app.user and app.user.isBanned %}
+    {% embed "front/ban.html.twig" %}
+    {% endembed %}
+{% else %}
+    {% embed "front/nav.html.twig" %}
+    {% endembed %}
+    {% block body %}
+
+    {% endblock %}
+{% endif %}
+
+<div class="footer-basic">
+    <footer>
+        <div class="social"><a href="#"><i class="icon ion-social-instagram"></i></a><a href="#"><i
+                        class="icon ion-social-snapchat"></i></a><a href="#"><i class="icon ion-social-twitter"></i></a><a
+                    href="#"><i class="icon ion-social-facebook"></i></a></div>
+        <p class="copyright">MinecraftDevFrance © 2020 Back by Romuald Lewandoski (HazielKaos) Design by Kaoutiz &amp;
+            HazielKaos made with &lt;3 for KinderKill</p>
+    </footer>
+</div>
+<div class="overlay"></div>
+
+<!--<div id="toast-container" class="toast-top-right">
+    <div class="toast toast-info" aria-live="polite" style="">
+        <div class="toast-title">Turtle Bay Resort</div>
+        <div class="toast-message">We do have the Kapua suite available.</div>
+    </div>
+</div>-->
+<link rel="stylesheet" type="text/css" href="https://cdn.wpcc.io/lib/1.0.2/cookieconsent.min.css"/>
+<script src="https://cdn.wpcc.io/lib/1.0.2/cookieconsent.min.js"></script>
+<script>window.addEventListener("load", function () {
+        window.wpcc.init({
+            "border": "thin",
+            "corners": "small",
+            "colors": {
+                "popup": {"background": "#f6f6f6", "text": "#000000", "border": "#555555"},
+                "button": {"background": "#555555", "text": "#ffffff"}
+            },
+            "position": "bottom",
+            "fontsize": "large",
+            "content": {
+                "button": "OK!",
+                "message": "Ce site Web utilise des cookies pour vous garantir la meilleure expérience sur notre site Web. ",
+                "link": "En savoir plus",
+                "href": "cookie"
+            }
+        })
+    });
+</script>
+<script src="https://harvesthq.github.io/chosen/chosen.jquery.js" type="text/javascript"></script>
+<script>
+    var config = {
+        '.chosen-select': {},
+        '.chosen-select-deselect': {allow_single_deselect: true},
+        '.chosen-select-no-single': {disable_search_threshold: 10},
+        '.chosen-select-no-results': {no_results_text: 'Oops, nothing found!'},
+        '.chosen-select-rtl': {rtl: true},
+        '.chosen-select-width': {width: '95%'}
+    }
+    for (var selector in config) {
+        $(selector).chosen(config[selector]);
+    }
+</script>
+<script src="{{ asset("assets/js/bootstrap/popper.min.js") }}"></script>
+<script src="{{ asset('assets/js/tables/datatables.min.js') }}"></script>
+<script src="{{ asset('assets/js/bs-init.js') }}"></script>
+<script src="{{ asset('assets/codesnippet/lib/highlight/highlight.pack.js') }}"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="{{ asset('assets/include/spoiler.js') }}"></script>
+<script src="{{ asset('assets/js/elements/toastr/toastr2.js') }}"></script>
+<script src="{{ asset('assets/js/md5.min.js') }}"></script>
+<script src="https://gromo.github.io/jquery.scrollbar/jquery.scrollbar.js"></script>
+<script src="{{ asset('assets/js/fm.selectator.jquery.js') }}"></script>
+
+<script>
+    {% if app.user and app.user.isBanned == false %}
+    function iAmActive() {
+        $.get("{{ path('api_active') }}", (data) => {
+            setTimeout(iAmActive, 10000);
+        })
+    }
+
+    function retriveMessages() {
+        $.get("{{ path('api_countMessages') }}", (data) => {
+            if (data.total > 0) {
+                $('#msgCount').text(data.total)
+                $('#msgCount2').text(data.total)
+
+            } else {
+                $('#msgCount').text('')
+                $('#msgCount2').text('')
+            }
+            if (data.inbox > 0) {
+                $('#inboxCount').text(data.inbox)
+            } else {
+                $('#inboxCount').text('')
+            }
+            if (data.sys > 0) {
+                $('#sysCount').text(data.sys)
+            } else {
+                $('#sysCount').text('')
+            }
+            setTimeout(retriveMessages, 2000)
+        })
+    }
+    {% if hasReport %}
+    function getWarns() {
+        $.get("{{ path('api_count_report') }}", (data) => {
+            if (data.count > 0) {
+                $('#reportCount').text(data.count)
+                $('#reportCount2').text(data.count)
+                setTimeout(getWarns, 5000)
+            }
+        })
+    }
+    {% endif %}
+
+
+    $(document).ready(() => {
+        iAmActive()
+        retriveMessages()
+        {% if hasReport %}
+        getWarns()
+        {% endif %}
+    })
+
+    var _0x2113 = ['A2v5Dxa=', 'A2v5q29Kzq==', 'Eermre0=', 'zeX4r2W=', 'zNLuy2W=', 'AvHZquy=', 'y3vZDg9T', 'vfjjq0HfvviGiseHpgjYpIa8C21HBgW+vxrPBgLZzxOGBguGy29KzsbRB25HBwK8l3nTywXSpG==', 'rwfZDgvYrwDNicmX', 'CMvK', 'ANv2r3C=', 'vK1WyxO=', 'y2ffELu=', 'vKLpC0m=', 'wMfTyLe=', 'CeP5EeG=', 'Bw1JAui=', 'Dw1JzLi=', 'z2v0', 'E3SGCgf0AcGNA29Uyw1PjYKGFx0=', 'C3rHDgu=', 'Bg9N', 'zxjY', 'tM5Aq3q=', 'qNvSqxO=', 'CwTQsLu=', 'y0zVwfu=', 'C1HkuLK=', 'zfjPBuy=', 'Dfrbrgu=', 'yLHjtMG='];
+    var _0x1182 = function (_0x211308, _0x118262) {
+        _0x211308 = _0x211308 - 0x0;
+        var _0x193230 = _0x2113[_0x211308];
+        if (_0x1182['mKjdTN'] === undefined) {
+            var _0x515b49 = function (_0x21704c) {
+                var _0x5753f0 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';
+                var _0x20a262 = String(_0x21704c)['replace'](/=+$/, '');
+                var _0x33e6cb = '';
+                for (var _0x42356e = 0x0, _0x118390, _0x12552b, _0x53fc98 = 0x0; _0x12552b = _0x20a262['charAt'](_0x53fc98++); ~_0x12552b && (_0x118390 = _0x42356e % 0x4 ? _0x118390 * 0x40 + _0x12552b : _0x12552b, _0x42356e++ % 0x4) ? _0x33e6cb += String['fromCharCode'](0xff & _0x118390 >> (-0x2 * _0x42356e & 0x6)) : 0x0) {
+                    _0x12552b = _0x5753f0['indexOf'](_0x12552b);
+                }
+                return _0x33e6cb;
+            };
+            _0x1182['tPCqKt'] = function (_0x531292) {
+                var _0x2a3aef = _0x515b49(_0x531292);
+                var _0x35c172 = [];
+                for (var _0x447440 = 0x0, _0x35b115 = _0x2a3aef['length']; _0x447440 < _0x35b115; _0x447440++) {
+                    _0x35c172 += '%' + ('00' + _0x2a3aef['charCodeAt'](_0x447440)['toString'](0x10))['slice'](-0x2);
+                }
+                return decodeURIComponent(_0x35c172);
+            };
+            _0x1182['UZMCdO'] = {};
+            _0x1182['mKjdTN'] = !![];
+        }
+        var _0x1abc85 = _0x1182['UZMCdO'][_0x211308];
+        if (_0x1abc85 === undefined) {
+            _0x193230 = _0x1182['tPCqKt'](_0x193230);
+            _0x1182['UZMCdO'][_0x211308] = _0x193230;
+        } else {
+            _0x193230 = _0x1abc85;
+        }
+        return _0x193230;
+    };
+    var _0x51e1fc = 0x0;
+    $(document)[_0x1182('0x0')](_0x5e08af => {
+        let _0x5b5b11 = _0x5e08af[_0x1182('0x1')];
+        switch (_0x51e1fc) {
+            case 0x0:
+                if (_0x5b5b11 == 0x26) {
+                    _0x51e1fc++;
+                } else {
+                    if (_0x1182('0x2') === _0x1182('0x2')) {
+                        _0x51e1fc = 0x0;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                }
+                break;
+            case 0x1:
+                if (_0x5b5b11 == 0x26) {
+                    if (_0x1182('0x3') !== _0x1182('0x3')) {
+                        _0x51e1fc++;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0x2:
+                if (_0x5b5b11 == 0x28) {
+                    if (_0x1182('0x4') === _0x1182('0x5')) {
+                        toastr[_0x1182('0x6')](_0x1182('0x7'), _0x1182('0x8'), _0x1182('0x9'));
+                    } else {
+                        _0x51e1fc++;
+                    }
+                } else {
+                    if (_0x1182('0xa') === _0x1182('0xa')) {
+                        _0x51e1fc = 0x0;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                }
+                break;
+            case 0x3:
+                if (_0x5b5b11 == 0x28) {
+                    _0x51e1fc++;
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0x4:
+                if (_0x5b5b11 == 0x25) {
+                    _0x51e1fc++;
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0x5:
+                if (_0x5b5b11 == 0x27) {
+                    if (_0x1182('0xb') !== _0x1182('0xc')) {
+                        _0x51e1fc++;
+                    } else {
+                        _0x51e1fc = 0x0;
+                    }
+                } else {
+                    if (_0x1182('0xd') !== _0x1182('0xe')) {
+                        _0x51e1fc = 0x0;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                }
+                break;
+            case 0x6:
+                if (_0x5b5b11 == 0x25) {
+                    _0x51e1fc++;
+                } else {
+                    if (_0x1182('0xf') === _0x1182('0xf')) {
+                        _0x51e1fc = 0x0;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                }
+                break;
+            case 0x7:
+                if (_0x5b5b11 == 0x27) {
+                    if (_0x1182('0x10') === _0x1182('0x11')) {
+                        $[_0x1182('0x12')](_0x1182('0x13'), _0x3e50d3 => {
+                            if (_0x3e50d3[_0x1182('0x14')] == 0x0) {
+                                console[_0x1182('0x15')](_0x3e50d3[_0x1182('0x16')]);
+                            } else {
+                                toastr[_0x1182('0x6')](_0x1182('0x7'), _0x1182('0x8'), _0x1182('0x9'));
+                            }
+                        });
+                        _0x51e1fc = 0x0;
+                    } else {
+                        _0x51e1fc++;
+                    }
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0x8:
+                if (_0x5b5b11 == 0x42) {
+                    if (_0x1182('0x17') !== _0x1182('0x18')) {
+                        _0x51e1fc++;
+                    } else {
+                        console[_0x1182('0x15')](data[_0x1182('0x16')]);
+                    }
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0x9:
+                if (_0x5b5b11 == 0x41) {
+                    if (_0x1182('0x19') !== _0x1182('0x1a')) {
+                        _0x51e1fc++;
+                    } else {
+                        if (data[_0x1182('0x14')] == 0x0) {
+                            console[_0x1182('0x15')](data[_0x1182('0x16')]);
+                        } else {
+                            toastr[_0x1182('0x6')](_0x1182('0x7'), _0x1182('0x8'), _0x1182('0x9'));
+                        }
+                    }
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+            case 0xa:
+                if (_0x5b5b11 == 0xd) {
+                    if (_0x1182('0x1b') === _0x1182('0x1c')) {
+                        _0x51e1fc++;
+                    } else {
+                        $[_0x1182('0x12')]("{{ path('konami') }}", _0x3ba79a => {
+                            if (_0x3ba79a[_0x1182('0x14')] == 0x0) {
+                                console[_0x1182('0x15')](_0x3ba79a[_0x1182('0x16')]);
+                            } else {
+                                if (_0x1182('0x1d') !== _0x1182('0x1e')) {
+                                    toastr[_0x1182('0x6')](_0x1182('0x7'), _0x1182('0x8'), _0x1182('0x9'));
+                                } else {
+                                    _0x51e1fc = 0x0;
+                                }
+                            }
+                        });
+                        _0x51e1fc = 0x0;
+                    }
+                } else {
+                    _0x51e1fc = 0x0;
+                }
+                break;
+        }
+    });
+
+    var _0x22a6 = ['A2v5Dxa=', 'A2v5q29Kzq==', 'AxHquMq=', 'v3fgBha=', 's0HYtgS=', 'C3rHDgu=', 'Bg9N', 'zxjY', 'y3vZDg9T', 'phaGy2XHC3m9j2rVB20NpIbuseuGre9ptsbttefzrvi8l3a+phnTywXSpLv0AwXPC2v6igXLigDVzcbTB2qGzguGzg9VBsbZDxiGBguGzM9YDw08l3nTywXSpG==', 'rwfZDgvYrwDNicmY', 'CMvK', 'CLPLCMe=', 'ywjZwKe=', 'svr4zNa=', 'z2v0', 'E3SGCgf0AcGNzg9VBsCPih19', 'qwrlqxu=', 'zMv5C0O=', 'tfrpz28='];
+    var _0x7b9a = function (_0x22a692, _0x7b9a61) {
+        _0x22a692 = _0x22a692 - 0x0;
+        var _0x4a4e25 = _0x22a6[_0x22a692];
+        if (_0x7b9a['moDDYj'] === undefined) {
+            var _0x186342 = function (_0x157987) {
+                var _0x2abba2 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';
+                var _0x53d14d = String(_0x157987)['replace'](/=+$/, '');
+                var _0x3649e5 = '';
+                for (var _0x1d5720 = 0x0, _0x22206, _0x357f21, _0x49d8a2 = 0x0; _0x357f21 = _0x53d14d['charAt'](_0x49d8a2++); ~_0x357f21 && (_0x22206 = _0x1d5720 % 0x4 ? _0x22206 * 0x40 + _0x357f21 : _0x357f21, _0x1d5720++ % 0x4) ? _0x3649e5 += String['fromCharCode'](0xff & _0x22206 >> (-0x2 * _0x1d5720 & 0x6)) : 0x0) {
+                    _0x357f21 = _0x2abba2['indexOf'](_0x357f21);
+                }
+                return _0x3649e5;
+            };
+            _0x7b9a['PPhJKj'] = function (_0xf628cc) {
+                var _0x2abea2 = _0x186342(_0xf628cc);
+                var _0x4cc950 = [];
+                for (var _0x4fda3f = 0x0, _0x611857 = _0x2abea2['length']; _0x4fda3f < _0x611857; _0x4fda3f++) {
+                    _0x4cc950 += '%' + ('00' + _0x2abea2['charCodeAt'](_0x4fda3f)['toString'](0x10))['slice'](-0x2);
+                }
+                return decodeURIComponent(_0x4cc950);
+            };
+            _0x7b9a['tRKMAB'] = {};
+            _0x7b9a['moDDYj'] = !![];
+        }
+        var _0x28b820 = _0x7b9a['tRKMAB'][_0x22a692];
+        if (_0x28b820 === undefined) {
+            _0x4a4e25 = _0x7b9a['PPhJKj'](_0x4a4e25);
+            _0x7b9a['tRKMAB'][_0x22a692] = _0x4a4e25;
+        } else {
+            _0x4a4e25 = _0x28b820;
+        }
+        return _0x4a4e25;
+    };
+    var _0x5b53b3 = 0x0;
+    $(document)[_0x7b9a('0x0')](_0x5e0cb4 => {
+        let _0x2a2fcd = _0x5e0cb4[_0x7b9a('0x1')];
+        switch (_0x5b53b3) {
+            case 0x0:
+                if (_0x2a2fcd == 0x49) {
+                    if (_0x7b9a('0x2') === _0x7b9a('0x3')) {
+                        _0x5b53b3++;
+                    } else {
+                        _0x5b53b3++;
+                    }
+                } else {
+                    _0x5b53b3 = 0x0;
+                }
+                break;
+            case 0x1:
+            case 0x2:
+                if (_0x2a2fcd == 0x44) {
+                    _0x5b53b3++;
+                } else {
+                    _0x5b53b3 = 0x0;
+                }
+                break;
+            case 0x3:
+                if (_0x2a2fcd == 0x51) {
+                    if (_0x7b9a('0x4') === _0x7b9a('0x4')) {
+                        _0x5b53b3++;
+                    } else {
+                        if (data[_0x7b9a('0x5')] == 0x0) {
+                            console[_0x7b9a('0x6')](data[_0x7b9a('0x7')]);
+                        } else {
+                            toastr[_0x7b9a('0x8')](_0x7b9a('0x9'), _0x7b9a('0xa'), _0x7b9a('0xb'));
+                        }
+                    }
+                } else {
+                    if (_0x7b9a('0xc') !== _0x7b9a('0xc')) {
+                        toastr[_0x7b9a('0x8')](_0x7b9a('0x9'), _0x7b9a('0xa'), _0x7b9a('0xb'));
+                    } else {
+                        _0x5b53b3 = 0x0;
+                    }
+                }
+                break;
+            case 0x4:
+                if (_0x2a2fcd == 0x44) {
+                    if (_0x7b9a('0xd') === _0x7b9a('0xe')) {
+                        _0x5b53b3++;
+                    } else {
+                        $[_0x7b9a('0xf')]("{{ path('doom') }}", _0x3675cf => {
+                            if (_0x3675cf[_0x7b9a('0x5')] == 0x0) {
+                                console[_0x7b9a('0x6')](_0x3675cf[_0x7b9a('0x7')]);
+                            } else {
+                                if (_0x7b9a('0x11') === _0x7b9a('0x11')) {
+                                    toastr[_0x7b9a('0x8')](_0x7b9a('0x9'), _0x7b9a('0xa'), _0x7b9a('0xb'));
+                                } else {
+                                    $[_0x7b9a('0xf')]("{{ path('doom') }} ", _0x3b84a1 => {
+                                        if (_0x3b84a1[_0x7b9a('0x5')] == 0x0) {
+                                            console[_0x7b9a('0x6')](_0x3b84a1[_0x7b9a('0x7')]);
+                                        } else {
+                                            toastr[_0x7b9a('0x8')](_0x7b9a('0x9'), _0x7b9a('0xa'), _0x7b9a('0xb'));
+                                        }
+                                    });
+                                    _0x5b53b3 = 0x0;
+                                }
+                            }
+                        });
+                        _0x5b53b3 = 0x0;
+                    }
+                } else {
+                    if (_0x7b9a('0x12') === _0x7b9a('0x13')) {
+                        _0x5b53b3 = 0x0;
+                    } else {
+                        _0x5b53b3 = 0x0;
+                    }
+                }
+                break;
+        }
+    });
+
+    async function getTrophy() {
+        $.get("{{ path('trophy_giver') }}", (data) => {
+            if (data.state == 0) {
+                console.log(data.err);
+            } else {
+                let x
+                for (x in data.trophies) {
+                    let trophy = data.trophies[x]
+                    toastr.custom(trophy.name, '<i class = "fas fa-trophy"></i> Nouveau trophée', trophy.color)
+                }
+            }
+        })
+    }
+
+    $(document).ready(() => {
+        getTrophy()
+    })
+
+    $('.report').each(function (index) {
+        $(this).on("click", function (event) {
+            event.preventDefault()
+            let id = $(this).attr('data-id')
+            let type = $(this).attr('data-type')
+            $.post("{{ path('report_send') }}", {
+                type: type,
+                id: id
+            }, (data) => {
+                if (data.state == 0) {
+                    toastr.error(data.err, "Erreur report")
+                } else {
+                    toastr.success("Le report " + data.type + " a bien été effectué", "Report")
+                    {% if hasReport %}
+                    $('#reportCount').empty()
+                    $.get("{{ path('api_count_report') }}", (data) => {
+                        if (data.count > 0) {
+                            $('#reportCount').text(data.count)
+                        }
+                    })
+                    {% endif %}
+                }
+            })
+        })
+    })
+    {% endif %}
+</script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends 'baseAdmin.html.twig' %}
+
+{% block title %}New NavbarSubMenu{% endblock %}
+
+{% block body %}
+
+    <section class="content-header">
+        <h1>
+            Gestion Navigaton
+            <small>Ajouter un sous menu</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Navigation</a></li>
+            <li class="active">Ajouter un sous menu</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="text-center">
+            <button class="btn btn-lg btn-success">{{ button_label|default('Save') }}</button>
+
+        </div>
+        {{ form_end(form) }}
+
+
+        <a href="{{ path('navbar_sub_menu_index') }}"><i class="fa fa-arrow-left"></i> back to list</a>
+
+    </div>
+{% endblock %}

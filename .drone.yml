@@ -1,0 +1,34 @@
+---
+kind: pipeline
+type: docker
+name: deploy
+
+trigger:
+  branch: master
+  event: push
+
+steps:
+  - name: deploy
+    image: appleboy/drone-ssh
+    settings:
+      host: dev01.companyofcube.fr
+      port: 1210
+      username: drone
+      key:
+        from_secret: deploy_ssh_key
+      script:
+        - cd /home/minecraftdevfrance-deploy/
+        - ./deploy_app.sh
+    when:
+      event: push
+
+  - name: notify-end
+    image: appleboy/drone-discord
+    settings:
+      webhook_id:
+        from_secret: discord_webhook_id
+      webhook_token:
+        from_secret: discord_webhook_token
+    when:
+      status: [ success, failure ]
+      event: push

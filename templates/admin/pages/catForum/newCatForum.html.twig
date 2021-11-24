@@ -1,0 +1,30 @@
+{% extends 'baseAdmin.html.twig' %}
+
+
+{% block body %}
+    <section class="content-header">
+        <h1>
+            Gestion Catégorie
+            <small>Ajouter une catégorie</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="{{ path('admin') }}"><i class="fa fa-dashboard"></i> Admin</a></li>
+            <li><a href="#">Catégorie</a></li>
+            <li class="active">Ajouter</li>
+        </ol>
+    </section>
+    <div class="dashboard1">
+
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <div class="text-center">
+            <button class="btn btn-lg btn-success">{{ button_label|default('Save') }}</button>
+
+        </div>
+        {{ form_end(form) }}
+
+
+        <a href="{{ path('cat_forum_index') }}"><i class="fa fa-arrow-left"></i> back to list</a>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AboutController!{% endblock %}
+
+{% block body %}
+    <div class="container mt-2 pl-4">
+
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-question"></i> A propos
+                    </a>
+                </li>
+            </ol>
+        </section>
+
+        <ul class="nav nav-tabs mt-5" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active text-black" id="home-tab" data-toggle="tab" href="#staff" role="tab"
+                   aria-controls="staff" aria-selected="true">Staff</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-black" id="profile-tab" data-toggle="tab" href="#cgu" role="tab"
+                   aria-controls="cgu" aria-selected="false">Cgu</a>
+            </li>
+            <li class="nav-item ">
+                <a class="nav-link text-black" id="contact-tab" data-toggle="tab" href="#rgpd" role="tab"
+                   aria-controls="rgpd" aria-selected="false">RGPD</a>
+            </li>
+        </ul>
+        <div class="tab-content p-4" id="myTabContent">
+            <div class="tab-pane fade show active" id="staff" role="tabpanel" aria-labelledby="home-tab">
+                <div class="col-md-12 ">
+                    {% for rank in ranks %}
+                        {% if rank.isDisplayStaff %}
+
+                            <div class="card">
+                                <div class="pt-3 pl-3 h4" style="color: {{ rank.color }}"><u>{{ rank.name }} :</u>
+                                    <hr>
+                                </div>
+                                <div class="card-body pt-2 mt-0 row">
+                                    {% for user in rank.users %}
+                                        <div class="col-md-6">
+                                            <a href="{{ path('view_user', {'username':user.username}) }}">
+                                                <div class="row mb-3 align-items-center">
+                                                    <div class="col-sm-2 d-none d-sm-block">
+                                                        {% if user.isOnline %}
+                                                            <span class="online"></span>
+                                                        {% endif %}
+                                                        {% if user.isMinecraftAvatar == true and user.userInfo.minecraft != null %}
+                                                            {{ getMcSkin(user.userInfo.minecraft, "img-thumbnail", "background-color: rgba(0,0,0,0)")|raw }}
+                                                        {% else %}
+                                                            <img class="img-thumbnail rounded-circle"
+                                                                 src="{{ gravatar(user.email) }}">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-sm-10 col-md-10 ">
+                                                        <div class="d-flex">
+                                                            <h5>
+                                                                <span style="color: {{ rank.color }}">{{ user.username }}</span>
+                                                                {% if user.isOnline %}
+                                                                    <i class="d-md-none d-lg-none d-xl-none fa online-txt"></i>
+                                                                {% endif %}
+                                                            </h5>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="tab-pane fade" id="cgu" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="col-md-12 p-3">
+                    {{ settings.cgu|raw }}
+                </div>
+            </div>
+            <div class="tab-pane fade" id="rgpd" role="tabpanel" aria-labelledby="contact-tab">
+                <div class="col-md-12 p-3">
+                    {{ settings.rgpd|raw }}
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

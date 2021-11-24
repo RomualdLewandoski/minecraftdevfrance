@@ -1,0 +1,491 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="container mt-2 pl-4">
+        <section class="content-header pl-1">
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#">
+                        <i class="fa fa-user"></i> Profil de {{ user.username }}
+                    </a>
+                </li>
+            </ol>
+        </section>
+        <div class="mt-5">
+            <div class="row">
+                <div class="col-sm-2 d-none d-sm-block">
+                    {% if user.isOnline %}
+                        <span class="online"></span>
+                    {% endif %}
+                    {% if user.isMinecraftAvatar == true and user.userInfo.minecraft != null %}
+                    {{ getMcSkin(user.userInfo.minecraft, "img-thumbnail", "background-color: rgba(0,0,0,0)")|raw }}
+                    {% else %}
+                    <img class="img-thumbnail rounded-circle"
+                                                             src="{{ gravatar(user.email) }}">
+                    {% endif %}
+                </div>
+                <div class="col-sm-10 col-md-10">
+                    <div class="d-flex">
+                        <h1 {% if user.isDoom and user.useDoomFont %} class="doom" {% endif %}>
+                            {% if user.isKonami %}
+                                <i class="fas fa-gamepad"></i>
+                            {% endif %}
+                            {% if user.isCookieMaster %}
+                                <i class="fas fa-cookie-bite"></i>
+                            {% endif %}
+                            {{ user.username }}
+                            {% if user.isOnline %}
+                                <i class="d-md-none d-lg-none d-xl-none fa online-txt"></i>
+                            {% endif %}
+                        </h1>
+                        <h1 class="">
+                            <a href="#" class="btn btn-primary ml-2 btn-sm btn-danger report" data-type="user"
+                               data-id="{{ user.id }}">Signaler</a>
+                            <form action="{{ path('createConv') }}" method="post" class="ml-2 pull-right">
+                                <input type="hidden" name="target" value="{{ user.id }}">
+                                <button class="btn btn-sm btn-success"><i class="far fa-envelope"></i></button>
+                            </form>
+                        </h1>
+                    </div>
+                    {% if
+                        'ROLE_ADMIN' in user.roles %}
+                        <span class="badge badge-primary badge-danger mr-1"><i
+                                    class="fas fa-star"></i> Super-Admin</span>
+                    {% endif %}
+
+                    {% for rank in user.userRanks %}
+                        <span class="badge mr-1"
+                              style="color: white; background-color: {{ rank.color }}">{{ rank.name }}</span>
+                    {% endfor %}
+                    {% if user.isKonami %}
+                        <span class="badge mr-1 badge-danger"><i class="fas fa-egg"></i> Cheater</span>
+                    {% endif %}
+                    {% if user.isDoom %}
+                        <span class="badge mr-1 badge-danger"><i class="fas fa-egg"></i> The Doom Slayer</span>
+                    {% endif %}
+                    {% if user.isCookieMaster %}
+                        <span class="badge mr-1 badge-danger"><i class="fas fa-egg"></i> Cookie Matser</span>
+                    {% endif %}
+
+
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-sm-4">
+                    <ul class="list-group">
+                        <li class="list-group-item text-muted"><span>Profil :</span></li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Inscription:</strong><br>
+                                <span class="text-muted">{{ user.createdAt|date('d/m/Y à H:i') }}</span>
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Dernière connexion:</strong><br>
+                                <span class="text-muted">{{ user.lastLogin|date("d/m/Y à H:i") }}</span>
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Nombre de Sujets:</strong><br>
+                                {{ user.topics|length }}
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Nombre de réponses:</strong><br>
+                                {{ user.replies|length }}
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Nombre de likes reçus:</strong><br>
+                                {{ user.totalLike }}
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <span>
+                                <strong>Nombre de likes admins:</strong><br>
+                                {{ user.superLikeCount }}
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-sm-8 mt-3 mt-sm-0">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div>
+                                <ul class="nav nav-tabs profile-tabs">
+                                    <li class="nav-item" data-toggle="tooltip" data-bs-tooltip="" data-placement="top"
+                                        title="Mur du profil">
+                                        <a class="nav-link active" role="tab" data-toggle="tab" href="#tab-5">
+                                            <i class="fas fa-pen"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" data-toggle="tooltip" data-bs-tooltip=""
+                                        title="Activité récentes">
+                                        <a class="nav-link" role="tab" data-toggle="tab" href="#tab-6">
+                                            <i class="far fa-calendar-alt"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" data-toggle="tooltip" data-bs-tooltip="" title="Posts">
+                                        <a class="nav-link" role="tab" data-toggle="tab" href="#tab-7">
+                                            <i class="far fa-comments"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" data-toggle="tooltip" data-bs-tooltip="" title="Informations">
+                                        <a class="nav-link" role="tab" data-toggle="tab" href="#tab-8">
+                                            <i class="fas fa-info"></i>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item" data-toggle="tooltip" data-bs-tooltip="" title="Trophées">
+                                        <a class="nav-link" role="tab" data-toggle="tab" href="#tab-9">
+                                            <i class="fas fa-trophy"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content pt-2 pr-2 pl-2 pb-0">
+                                    <div class="tab-pane active pt-2 pl-2 pr-2" role="tabpanel" id="tab-5">
+                                        {% for wall in walls %}
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-sm-2 d-none d-sm-block">
+                                            {% if user.isMinecraftAvatar == true and user.userInfo.minecraft != null %}
+                                            {{ getMcSkin(user.userInfo.minecraft, "img-thumbnail2", "background-color: rgba(0,0,0,0)")|raw }}
+                                        {% else %}
+                                                    <img
+                                                            class="img-thumbnail rounded-circle"
+                                                            src="{{ gravatar(user.email) }}">
+                                            {% endif %}
+                                                </div>
+                                                <div class="col-12 col-sm-10">
+                                                    <p>{{ wall.text }}</p>
+                                                    <hr class="mb-3">
+
+                                                    {% if app.user %}
+                                                        <a href="{{ path('view_user_like', {'id': wall.id}) }}" class="btn btn-sm
+                                                            {% if app.user.liked(wall) %}
+                                                                btn-success
+                                                            {% else %}
+                                                                btn-primary
+                                                            {% endif %}
+                                                        ">
+                                                            <i class="fas fa-thumbs-up"></i> {{ wall.getLiked|length }}
+                                                        </a>
+                                                        <a href="{{ path('view_user_dislike', {'id': wall.id}) }}"
+                                                           class="btn btn-sm
+                                                            {% if app.user.disliked(wall) %}
+                                                                btn-danger
+                                                            {% else %}
+                                                                btn-primary
+                                                            {% endif %}">
+                                                            <i class="fas fa-thumbs-down"></i> {{ wall.getDisliked|length }}
+                                                        </a>
+                                                    {% endif %}
+
+                                                    <span class="mr-1 text-muted small">{{ wall.postedAt|date("d/m/Y à H:i") }}</span>
+                                                    {% if canManageProfil or is_granted('ROLE_ADMIN') %}
+                                                        <a class="mr-1"
+                                                           href="{{ path('delete_wall', {'id': wall.id }) }}">Delete</a>
+                                                    {% endif %}
+                                                    <a class="mr-1 report" href="#" data-type="wall"
+                                                       data-id="{{ wall.id }}">Signaler</a>
+
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-12 ">
+                                                    <p>L'utilisateur n'as rien posté sur son profil</p>
+                                                </div>
+                                            </div>
+
+                                        {% endfor %}
+                                        <div class="mt-2 ">
+
+                                            <div class="offset-md-4 col-md-4">
+                                                {{ knp_pagination_render(walls) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" role="tabpanel" id="tab-6">
+                                        {% for activity in activities %}
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-sm-2 d-none d-sm-block">
+                                            {% if user.isMinecraftAvatar == true and user.userInfo.minecraft != null %}
+                                            {{ getMcSkin(user.userInfo.minecraft, "img-thumbnail2", "background-color: rgba(0,0,0,0)")|raw }}
+                                        {% else %}
+                                                    <img
+                                                            class="img-thumbnail rounded-circle"
+                                                            src="{{ gravatar(user.email) }}">
+                                            {% endif %}
+                                                </div>
+                                                <div class="col-12 col-sm-10">
+                                                    <p>
+                                                        <strong>{{ user.username }} </strong>{{ activity.type == 0 ? "a créer le sujet " : activity.type == 1 ? "a répondu au sujet " : "a posté sur son mur " }}
+                                                        {% if activity.type != 2 %}
+                                                            {% if activity.type == 0 %}
+                                                                <a href="{{ path('view_topic', { 'id': activity.targetIdTopic.id}) }}">{{ activity.targetIdTopic.titre }}</a>
+                                                            {% else %}
+                                                                <a href="{{ path('view_topic', { 'id': activity.targetIdReply.topic.id}) }}?reply={{ activity.targetIdReply.id }}">{{ activity.targetIdReply.topic.titre }}</a>
+                                                            {% endif %}
+                                                        {% endif %}
+                                                        <br>
+                                                        <em>
+                                                            {% if activity.type == 0 %}
+                                                                {{ activity.targetIdTopic.message|slice(0,100)|striptags|raw  }}...
+                                                            {% elseif activity.type == 1 %}
+                                                                {{ activity.targetIdReply.message|slice(0,100)|striptags|raw  }}...
+                                                            {% else %}
+                                                                {{ activity.targetIdWall.text|slice(0,100)|striptags|raw  }}...
+                                                            {% endif %}
+                                                        </em>
+                                                    </p><span class="mr-1 text-muted small">27/07/2020 à 14:00</span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+
+
+                                        <div class="mt-2 ">
+
+                                            <div class="offset-md-4 col-md-4">
+                                                {{ knp_pagination_render(activities) }}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="tab-pane" role="tabpanel" id="tab-7">
+                                        {% for topic in topics %}
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-sm-2 d-none d-sm-block">
+                                            {% if user.isMinecraftAvatar == true and user.userInfo.minecraft != null %}
+                                            {{ getMcSkin(user.userInfo.minecraft, "img-thumbnail2", "background-color: rgba(0,0,0,0)")|raw }}
+                                        {% else %}
+                                                    <img
+                                                            class="img-thumbnail rounded-circle"
+                                                            src="{{ gravatar(user.email) }}">
+                                            {% endif %}
+                                                </div>
+                                                <div class="col-12 col-sm-10">
+                                                    <p>
+                                                        <a href="{{ path('view_topic', { 'id': topic.id}) }}">{{ topic.titre }}</a>
+                                                    </p><span
+                                                            class="mr-1 text-muted small">{{ topic.postedAt|date('d/m/Y à H:i') }} dans {{ topic.forum.nom }}</span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="mt-2 ">
+
+                                            <div class="offset-md-4 col-md-4">
+                                                {{ knp_pagination_render(topics) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" role="tabpanel" id="tab-8">
+                                        <table class="table">
+                                            <tbody>
+                                            <tr>
+                                                <th class="text-muted">
+                                                    Genre:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.gender != null %}
+                                                        {% if user.userInfo.isGender %}
+                                                            {{ user.userInfo.gender }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">
+                                                    Anniversaire:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.birthDate != null %}
+                                                        {% if user.userInfo.isBirthDate %}
+                                                            {{ user.userInfo.birthDate|date("d  M.  Y") }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">
+                                                    HomePage:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.homePage != null %}
+                                                        {% if user.userInfo.isHomePage %}
+                                                            <a href="{{ user.userInfo.homePage }}"
+                                                               target="_blank">{{ user.userInfo.homePage }}</a>
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">
+                                                    Pays:
+                                                </th>
+                                                <td>
+
+                                                    {% if user.userInfo != null and user.userInfo.country != null %}
+                                                        {% if user.userInfo.isCountry %}
+                                                            {{ user.userInfo.country }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-muted">
+                                                    Profession:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.job != null %}
+                                                        {% if user.userInfo.isJob %}
+                                                            {{ user.userInfo.job }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                </th>
+                                                <td>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    Steam:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.steam != null %}
+                                                        {% if user.userInfo.isSteam %}
+                                                            {{ user.userInfo.steam }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>
+                                                    Minecraft:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.minecraft != null %}
+                                                        {% if user.userInfo.isMinecraft %}
+                                                            {{ user.userInfo.minecraft }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>
+                                                    Twitch:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.twitch != null %}
+                                                        {% if user.userInfo.isTwitch %}
+                                                            {{ user.userInfo.twitch }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <th>
+                                                    Discord:
+                                                </th>
+                                                <td>
+                                                    {% if user.userInfo != null and user.userInfo.discord != null %}
+                                                        {% if user.userInfo.isDiscord %}
+                                                            {{ user.userInfo.discord }}
+                                                        {% else %}
+                                                            <i>L'utilisateur ne permet pas l'affichage de cette
+                                                                information</i>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        ---
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="tab-pane" role="tabpanel" id="tab-9">
+                                        {% for trophy in trophies %}
+                                            <div class="row border-bottom py-2">
+                                                <div class="col-sm-2 d-none d-sm-block text-center"><span
+                                                            class="forum-icon "
+                                                            style="background-color: {{ trophy.trophy.bgColor }}; {% if trophy.trophy.isSuper %} color: gold; {% endif %}"><i
+                                                                class="fas fa-trophy"></i></span>
+                                                </div>
+                                                <div class="col-12 col-sm-10 pl-sm-4 pl-md-0">
+                                                    <p>
+                                                        <strong>{{ trophy.trophy.name }}</strong><br>{{ trophy.trophy.description }}
+                                                    </p><span
+                                                            class="mr-1 text-muted small">Obtenu le {{ trophy.date|date("d/m/Y à H:i") }}</span>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+
+                                        <div class="mt-2 ">
+
+                                            <div class="offset-md-4 col-md-4">
+                                                {{ knp_pagination_render(trophies) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
